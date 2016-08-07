@@ -10,12 +10,14 @@ import key
 
 # data directory
 data_dir = "data/"
-
+closing_prices_data = data_dir + "closing_prices"
 # a dataset containing ticker, name and sector of all companies listed on the snp500
 companies_abridged = data_dir + "constituents.csv"
 # data from the above dataset + fundamentals incl pe ratio, earnings per share, book value
 companies_detailed = data_dir + "constituents-financials.csv"
 
+csv = ".csv"
+sql = ".sqlite"
 
 # parameters
 
