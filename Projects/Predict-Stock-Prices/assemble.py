@@ -27,31 +27,22 @@ def get_data():
     name = companies["Name"]
     companies = dict(zip(name, tickers))
     
-    gate = False
-    count = 0
     for name, ticker in companies.items():
         
-        if gate == False:
-            # get stock data from YAHOO!
-            yahoo = Share(ticker)
-            historical_data = yahoo.get_historical(start_date, end_date)
-            
-            # create a dataframe with this data
-            df2 = pd.DataFrame(data = historical_data)
-            
-            closing_prices = adjusted_close(closing_prices, df2, ticker)
-            closing_prices = normalize_data(closing_prices)
-            count += 1
-            if count == 2:
-                gate = True
-        else:
-            return closing_prices
+        # get stock data from YAHOO!
+        yahoo = Share(ticker)
+        historical_data = yahoo.get_historical(start_date, end_date)
         
+        # create a dataframe with this data
+        df2 = pd.DataFrame(data = historical_data)
+        
+        closing_prices = adjusted_close(closing_prices, df2, ticker)
+    
     return closing_prices
     
 def normalize_data(df = None):
     
-    df = df.apply(lambda x: (x - x.mean()) / (x.max() - x.min()))
+    df = df / df.ix[0, :]
     return df
     
 def adjusted_close(df1 = None, df2 = None, ticker = None):
