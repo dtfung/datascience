@@ -44,15 +44,14 @@ def get_data():
         df2 = pd.DataFrame(data = historical_data)
         closing_prices = adjusted_close(closing_prices, df2, ticker)
     # save dataframe
-        save_dataframe(closing_prices)
-        print "csv successfully saved!"
+    save_dataframe(closing_prices)
+    print "csv successfully saved!"
     # save database
-        create_database(closing_prices)
-        
+    #create_database(closing_prices)
+    #print "databased successfully saved!"  
     return closing_prices
     
 def normalize_data(df = None):
-
     x = df.values #returns a numpy array
     min_max_scaler = preprocessing.MinMaxScaler()
     x_scaled = min_max_scaler.fit_transform(x)
@@ -64,7 +63,7 @@ def save_dataframe(df = None):
     df.to_csv(closing_prices, sep='\t', encoding='utf-8')
 
 def create_database(df = None):
-    closing_prices = settings.closing_prices_data  + settings.sql
+    closing_prices = settings.closing_prices_data + settings.sql
     conn = sqlite3.connect(closing_prices)
     df.to_sql(closing_prices, conn)
     
