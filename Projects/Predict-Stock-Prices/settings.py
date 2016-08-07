@@ -8,14 +8,19 @@ Created on Sat Aug  6 22:09:17 2016
 """ STORE ALL FILE NAMES HERE """
 import key
 
-# data 
-data_dir = "data"
+# data directory
+data_dir = "data/"
+
+# a dataset containing ticker, name and sector of all companies listed on the snp500
+companies_abridged = data_dir + "constituents.csv"
+# data from the above dataset + fundamentals incl pe ratio, earnings per share, book value
+companies_detailed = data_dir + "constituents-financials.csv"
 
 
 # parameters
 
-# stock ticker
-ticker = "AAPL"
+start_date = "2010-01-01"
+end_date = "2016-07-31"
 
 """ QUANDL DATABASES """
 
@@ -32,10 +37,15 @@ up to 11 years history, 101 indicators, expanding coverage, daily updates.
 """
 sf1 = "SF1/"
 
+""" YAHOO FINANCE 
+
+link: https://pypi.python.org/pypi/yahoo-finance/1.1.4
+"""
+
 # API Key
 api_key = key.get_key() 
 
-""" QUANDL CODES """
+""" QUANDL CODES
 
 # stock price code
 stock_price_code = wiki + ticker
@@ -55,6 +65,7 @@ dps_code = sf1 + ticker + "_DPS_MRT"
 # 50-day oving avg
 # 10-day moving avg
 # quick ratio
+"""
 
 
 

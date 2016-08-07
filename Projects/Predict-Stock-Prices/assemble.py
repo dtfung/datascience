@@ -7,54 +7,71 @@ Created on Sat Aug  6 22:17:36 2016
 
 """ Retrieve and process raw data and create csv and sqlite database"""
 
-import quandl
-import sqlite3
+from yahoo_finance import Share
 import settings
+import pandas as pd
 
-HEADERS = [
-    "Name",
-    "Ticker",
-    "PE_Ratio",
-    "Volume", 
-    "Ebitda",
+def get_data():
     
-]
-
-
-def get_data(ticker = None):
+    # Define data range
+    start_date = settings.start_date
+    end_date = settings.end_date
+    dates = pd.date_range(start_date, end_date)
     
-    # quandl key
-    api_key = settings.api_key
-    quandl.ApiConfig.api_key = api_key
+    # create empty dataframe with dates as index
+    closing_prices = pd.DataFrame(index = dates)
     
-    # get codes
-    stock_price_code = settings.stock_price_code
-    pe_ratio_code = settings.pe_ratio_code
+    # dataframe of company name, ticker and industry
+    companies = pd.read_csv(settings.companies_abridged)
+    tickers = companies["Symbol"]
+    name = companies["Name"]
+    companies = dict(zip(name, tickers))
     
-    # store codes
-    codes = [stock_price_code, pe_ratio_code]
-    
-    # empty array using for storing raw data
-    data_list = []
-    
-    for value in codes:
-        # get data using Quandl Python module
-        data = quandl.get(value)
+    gate = False
+    count = 0
+    for name, ticker in companies.items():
         
-        # store data in array
-        data_list.append(data)
-
-    return data_list
+        if gate == False:
+            # get stock data from YAHOO!
+            yahoo = Share(ticker)
+            historical_data = yahoo.get_historical(start_date, end_date)
+            
+            # create a dataframe with this data
+            df2 = pd.DataFrame(data = historical_data)
+            
+            closing_prices = adjusted_close(closing_prices, df2, ticker)
+            closing_prices = normalize_data(closing_prices)
+            count += 1
+            if count == 2:
+                gate = True
+        else:
+            return closing_prices
+        
+    return closing_prices
     
-data = get_data('AAPL')
-pe = data[1]
-print (pe.head(20))
-
-data = get_data('T')
-pe = data[1]
-print (pe.head(20))
-
-data = get_data('INTL')
-pe = data[1]
-print (pe.head(20))
+def normalize_data(df = None):
     
+    df = df.apply(lambda x: (x - x.mean()) / (x.max() - x.min()))
+    return df
+    
+def adjusted_close(df1 = None, df2 = None, ticker = None):
+    
+    # extract adjusted closing price 
+    columns = ["Date", "Adj_Close"]
+    df_temp = pd.DataFrame(df2, columns=columns)
+    df_temp = df_temp.rename(columns = {"Adj_Close": ticker})
+    
+    # set index to be the date column
+    df_temp = df_temp.set_index("Date")
+
+    # join dataframes
+    df1 = df1.join(df_temp, how = 'inner')
+    
+    # drop rows with NaN values
+    df1 = df1.dropna()
+    return df1
+    
+    
+data = get_data()
+print data[:1000]
+print data.shape
