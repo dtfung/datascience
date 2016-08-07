@@ -1,3 +1,3 @@
 # projects of interest
 
-* Predict Post-School Earnings
+* Predict Stock Prices 
