@@ -41,5 +41,21 @@ api_key = key.get_key()
 stock_price_code = wiki + ticker
 # PE ratio code
 pe_ratio_code = sf1 + ticker + "_PE1_MRT"
+# enterprise value code
+ev_code = sf1 + ticker + "_EV"
+# ebitda code
+ebitda_code = sf1 + ticker + "_EBITDA_ART"
+# eps code
+eps_code = sf1 + ticker + "_EPSGROWTH1YR_ART"
+# dividends per share
+dps_code = sf1 + ticker + "_DPS_MRT"
+
+# 2-day net price change
+# 10-day volatility
+# 50-day oving avg
+# 10-day moving avg
+# quick ratio
+
+
 
 
