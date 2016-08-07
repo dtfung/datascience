@@ -15,12 +15,11 @@ import sqlite3
 
 def get_data():
     # check if csv exists
-    closing_prices = settings.closing_prices_data
+    closing_prices = settings.closing_prices_data + settings.csv
     try:
         data = pd.read_csv(closing_prices)
-        if data:
-            print "successfully loaded closing prices!"
-            return data
+        print "successfully loaded closing prices!"
+        return data
     except:
         print "no csv file"
         
@@ -37,6 +36,7 @@ def get_data():
     companies = dict(zip(name, tickers))
     
     for name, ticker in companies.items():
+        print "getting stock data"
         # get stock data from YAHOO!
         yahoo = Share(ticker)
         historical_data = yahoo.get_historical(start_date, end_date)
