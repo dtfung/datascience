@@ -9,6 +9,8 @@ Created on Sat Aug  6 22:17:36 2016
 
 from yahoo_finance import Share
 import settings
+import plots
+import computations
 import pandas as pd
 from sklearn import preprocessing
 import sqlite3
@@ -17,7 +19,8 @@ def get_data():
     # check if csv exists
     closing_prices = settings.closing_prices_data + settings.csv
     try:
-        data = pd.read_csv(closing_prices)
+        data = pd.read_csv(closing_prices, index_col = "Unnamed: 0")
+        #print data[0:5, :]
         print "successfully loaded closing prices!"
         return data
     except:
@@ -51,13 +54,6 @@ def get_data():
     #print "databased successfully saved!"  
     return closing_prices
     
-def normalize_data(df = None):
-    x = df.values #returns a numpy array
-    min_max_scaler = preprocessing.MinMaxScaler()
-    x_scaled = min_max_scaler.fit_transform(x)
-    df = pd.DataFrame(x_scaled)
-    return df
-    
 def save_dataframe(df = None):
     closing_prices = settings.closing_prices_data + settings.csv
     df.to_csv(closing_prices, sep='\t', encoding='utf-8')
@@ -81,4 +77,10 @@ def adjusted_close(df1 = None, df2 = None, ticker = None):
     return df1
     
 data = get_data()
-
+#print data
+print data.median()
+#plots.plot_rolling_mean(dataframe = data, ticker = "AAL", window = 20)
+returns = computations.compute_daily_returns(data)
+#data = computations.normalize_data(data)
+cum_returns = computations.compute_cumulative_returns(data, time = -20)
+print cum_returns
