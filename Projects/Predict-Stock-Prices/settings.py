@@ -19,18 +19,26 @@ companies_detailed = data_dir + "constituents-financials.csv"
 csv = ".csv"
 sql = ".sqlite"
 
-# parameters
-
 start_date = "2010-01-01"
 end_date = "2016-07-31"
 
-""" QUANDL DATABASES """
+# choose data source
+datasources = ["Yahoo", "Quandl"]
+active_datasource = datasources[1]
+
+
+""" 
+----------------------------------------------------------------------
+QUANDL DATABASES """
+
+# API Key
+api_key = key.get_key() 
 
 """ Wiki EOD Stock Prices 
 End of day stock prices, dividends and splits for 3,000 US companies, 
 curated by the Quandl community and released into the public domain 
 """
-wiki = "WIKI/"
+stock_price_code = "WIKI/"
 
 """ Core US Fundamentals Data
 
@@ -39,18 +47,20 @@ up to 11 years history, 101 indicators, expanding coverage, daily updates.
 """
 sf1 = "SF1/"
 
-""" YAHOO FINANCE 
+"""
+-----------------------------------------------------------------------
+
+""" 
+"""
+YAHOO FINANCE
 
 link: https://pypi.python.org/pypi/yahoo-finance/1.1.4
 """
 
-# API Key
-api_key = key.get_key() 
 
-""" QUANDL CODES
 
-# stock price code
-stock_price_code = wiki + ticker
+""" QUANDL CODES """
+"""
 # PE ratio code
 pe_ratio_code = sf1 + ticker + "_PE1_MRT"
 # enterprise value code
