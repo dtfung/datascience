@@ -7,6 +7,13 @@ Created on Sun Aug  7 18:28:44 2016
 import matplotlib.pyplot as plt
 import pandas as pd
 
+def plot_stock_price_data(dataframe):
+    ax = dataframe.plot(title = "Stock Prices")
+    ax.set_xlabel("Date")
+    ax.set_ylabel("Price")
+    plt.show()
+    
+
 def plot_rolling_mean(dataframe, ticker, window):
     # Plot stock data
     ax = dataframe[ticker].plot(title = ticker + "rolling mean", label = ticker)
