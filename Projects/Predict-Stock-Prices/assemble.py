@@ -11,8 +11,8 @@ from yahoo_finance import Share
 import settings
 import plots
 import computations
+import prepare
 import pandas as pd
-from sklearn import preprocessing
 import sqlite3
 
 def get_data():
@@ -20,7 +20,6 @@ def get_data():
     closing_prices = settings.closing_prices_data + settings.csv
     try:
         data = pd.read_csv(closing_prices, index_col = "Unnamed: 0")
-        #print data[0:5, :]
         print "successfully loaded closing prices!"
         return data
     except:
@@ -56,7 +55,7 @@ def get_data():
     
 def save_dataframe(df = None):
     closing_prices = settings.closing_prices_data + settings.csv
-    df.to_csv(closing_prices, sep='\t', encoding='utf-8')
+    df.to_csv(closing_prices, sep=',', encoding='utf-8')
 
 def create_database(df = None):
     closing_prices = settings.closing_prices_data + settings.sql
@@ -73,14 +72,16 @@ def adjusted_close(df1 = None, df2 = None, ticker = None):
     # join dataframes
     df1 = df1.join(df_temp, how = 'inner')
     # drop rows with NaN values
-    df1 = df1.dropna()
+    #df1 = df1.dropna()
+    df1 = prepare.fill_missing_values(df1)
     return df1
     
 data = get_data()
-#print data
+print data
 print data.median()
 #plots.plot_rolling_mean(dataframe = data, ticker = "AAL", window = 20)
-returns = computations.compute_daily_returns(data)
+#plots.plot_stock_price_data(data)
+#returns = computations.compute_daily_returns(data)
 #data = computations.normalize_data(data)
-cum_returns = computations.compute_cumulative_returns(data, time = -20)
-print cum_returns
+#cum_returns = computations.compute_cumulative_returns(data, time = -20)
+#print cum_returns
