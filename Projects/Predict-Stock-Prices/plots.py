@@ -13,7 +13,10 @@ def plot_stock_price_data(dataframe):
     ax.set_ylabel("Price")
     plt.show()
     
-
+def plot_selected_stocks(dataframe, columns, start_index, end_index):
+    # Plot desired columns over index values in the given range
+    plot_stock_price_data(dataframe.ix[start_index:end_index, columns], title = "Selected Data")
+    
 def plot_rolling_mean(dataframe, ticker, window):
     # Plot stock data
     ax = dataframe[ticker].plot(title = ticker + "rolling mean", label = ticker)
