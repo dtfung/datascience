@@ -4,14 +4,7 @@ Created on Sun Aug  7 22:49:33 2016
 
 @author: donaldfung
 """
-
-""" DATE PREPROCESSING """
-
-def normalize_data(df = None):
-    starting_price = df.ix[0, :]
-    df = df/starting_price 
-    return df
-    
+ 
 """ FINANCIAL CALCULATIONS """
 
 def compute_daily_returns(dataframe):
