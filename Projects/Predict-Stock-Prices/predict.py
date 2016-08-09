@@ -6,6 +6,25 @@ Created on Sat Aug  6 22:16:58 2016
 """
 
 import settings
+import assemble
+import Environment
 
-if __name == "__main__":
-    pass
+class Q_Learning(self):
+    def __init__(self):
+        # Initialize variables here
+        pass
+    
+    def update(self, state):
+        # Get new state from environment
+        pass
+
+def run():
+    #   Get stock price data
+    data = assemble.Data(settings.company, settings.storage_option)
+    df = data.create_dataframe()
+    #   Setup environment
+    env = Environment.Market()
+    env.get_financials(df)
+if __name__ == "__main__":
+    run()
+    

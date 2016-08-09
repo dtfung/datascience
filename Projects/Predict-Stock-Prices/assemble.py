@@ -21,11 +21,10 @@ import prepare
 import pandas as pd
 import sqlite3
 
-class Data(object):
+class Data():
     def __init__(self, company, storage_option):
         self.company = company
         self.storage_option = storage_option
-        self.dataframe = None
         self.conn = None
         self.features = settings.features
         self.headers = settings.headers
@@ -44,8 +43,6 @@ class Data(object):
         price_enpoint = self.endpoints["Prices"]
         results = quandl.get(price_enpoint, start_date = self.start_date, end_date = self.end_date)
         df = results[["Adj. Close", "Adj. Volume"]]
-        
-        #rolling_mean =  # TODO: calculate rolling mean
         return df
         
     def save_data(self):
@@ -57,6 +54,7 @@ class Data(object):
         elif self.storage_option == "csv":
             # TODO: save dataframe to csv
             pass
+        
 class Database(object):
     def __init__(self):
         # declare properties
@@ -101,73 +99,6 @@ class Database(object):
         self.connection.commit()
         self.connection.close()
         
-def create_csv_files():
-    # Define data range
-    start_date = settings.start_date
-    end_date = settings.end_date
-    # TODO: specify features and create files 
-    """ NOTE: Code below creates csv file for closing prices only """
-    dates = pd.date_range(start_date, end_date)
-    # create empty dataframe with dates as index
-    closing_prices = pd.DataFrame(index = dates)
-    # dataframe of company name, ticker and industry
-    companies = pd.read_csv(settings.companies_abridged)
-    tickers = companies["Symbol"]
-    name = companies["Name"]
-    companies = dict(zip(name, tickers))
-    # active data source
-    datasource = settings.active_datasource
-    
-    for name, ticker in companies.items():
-        print "getting stock data"
-        try:
-            data = get_data_from_datasource(datasource, ticker, start_date, end_date)
-            closing_prices = adjusted_close(closing_prices, data, ticker, provider = datasource)
-        except:
-            print "Error getting data for ", name, ticker
-    # fill in empty values
-    closing_prices = prepare.fill_missing_values(closing_prices)
-    # save dataframe
-    save_dataframe(closing_prices)
-    print "csv successfully saved!" 
-        
-def save_dataframe(df = None):
-    closing_prices = settings.closing_prices_data + settings.csv
-    df.to_csv(closing_prices, sep=',', encoding='utf-8')
-    
-def adjusted_close(df1, df2, ticker, provider):
-    if provider == "Yahoo":
-        # extract adjusted closing price 
-        columns = ["Date", "Adj_Close"]
-        df_temp = pd.DataFrame(df2, columns=columns)
-        df_temp = df_temp.rename(columns = {"Adj_Close": ticker})
-        # set index to be the date column
-        df_temp = df_temp.set_index("Date")
-        # join dataframes
-        df1 = df1.join(df_temp, how = 'inner')
-        # drop rows with NaN values
-        #df1 = df1.dropna()
-        df1 = prepare.fill_missing_values(df1)
-    elif provider == "Quandl":
-        columns = ["Adj. Close"]
-        df_temp = pd.DataFrame(df2, columns=columns)
-        df_temp = df_temp.rename(columns = {"Adj. Close": ticker})
-        df1 = df1.join(df_temp, how = 'outer')
-    return df1
-    
 if __name__ == "__main__":
-    """ Takes a list of companies and gets data for them.  The data
-    is then stored in a database for later use.  
-    
-    Input: A list of company stock ticker symbols
-    """
     data = Data(settings.company, settings.storage_option)
     data.get_data()
-
-#print data.median()
-#plots.plot_rolling_mean(dataframe = data, ticker = "AAL", window = 20)
-#plots.plot_stock_price_data(data)
-#returns = computations.compute_daily_returns(data)
-#data = computations.normalize_data(data)
-#cum_returns = computations.compute_cumulative_returns(data, time = -20)
-#print cum_returns
