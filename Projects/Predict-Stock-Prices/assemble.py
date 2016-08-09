@@ -36,14 +36,6 @@ class Data(object):
     def get_data(self):
         try:
             self.dataframe = self.create_dataframe()
-            for key, endpoint in self.endpoints.items():
-                if key == "Prices":
-                    results = quandl.get(endpoint, start_date = self.start_date, end_date = self.end_date)
-                    self.dataframe = self.create_dataframe(results)
-                    
-                    
-                results = quandl.get(endpoint, start_date = self.start_date, end_date = self.end_date)
-                    
         except:
             print "error getting data"
             
@@ -52,8 +44,8 @@ class Data(object):
         price_enpoint = self.endpoints["Prices"]
         results = quandl.get(price_enpoint, start_date = self.start_date, end_date = self.end_date)
         df = results[["Adj. Close", "Adj. Volume"]]
-
-        #df = pd.DataFrame(results, columns = column)
+        
+        #rolling_mean =  # TODO: calculate rolling mean
         return df
         
     def save_data(self):
@@ -138,17 +130,6 @@ def create_csv_files():
     # save dataframe
     save_dataframe(closing_prices)
     print "csv successfully saved!" 
-    
-def get_data_from_datasource(provider, ticker, start_date, end_date):
-    if provider == "Yahoo":
-        yahoo = Share(ticker)
-        historical_data = yahoo.get_historical(start_date, end_date)
-        return historical_data
-    elif provider == "Quandl":
-        endpoint = settings.stock_price_code + ticker
-        quandl.ApiConfig.api_key = settings.api_key
-        data = quandl.get(endpoint, start_date = start_date, end_date = end_date)
-        return data
         
 def save_dataframe(df = None):
     closing_prices = settings.closing_prices_data + settings.csv
