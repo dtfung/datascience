@@ -22,7 +22,10 @@ stock_data_csv = data_dir + "closing_prices" + csv
 list_of_csv_filenames = [stock_data_csv]
 
 # database filename
-stock_data_db = data_dir + "stock-data" + sql
+stock_data_db = data_dir + "stockdata" + sql
+
+# database headers
+headers = ["id", "Date", "Symbol", "Adj_Close", "Volume", "PE_Ratio", "Book_Value"]
 
 # a dataset containing ticker, name and sector of all companies listed on the snp500
 companies_abridged = data_dir + "constituents.csv"
@@ -30,7 +33,7 @@ companies_abridged = data_dir + "constituents.csv"
 companies_detailed = data_dir + "constituents-financials.csv"
 
 # companies to be used in building dataset and training model
-companies = ["INTC, GM"] # for now, let's use Intel Corp and General Motors
+companies = ["INTC", "GM"] # for now, let's use Intel Corp and General Motors
 
 # data ranges
 start_date = "2010-01-01"
