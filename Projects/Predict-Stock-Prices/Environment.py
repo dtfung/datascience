@@ -12,9 +12,10 @@ class Market():
         self.state = None
         self.learner = predict.Q_Learning()
     
-    def get_financials():
+    def get_financials(self, data):
         financials = computations.Financials()
-        
+        n = 20 # look back n number of days / window
+        rolling_mean = financials.rolling_mean(data, n)# get rolling mean
         #self.learner.update(state)
         
         

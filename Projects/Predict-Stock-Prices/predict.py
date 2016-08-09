@@ -9,7 +9,7 @@ import settings
 import assemble
 import Environment
 
-class Q_Learning(self):
+class Q_Learning():
     def __init__(self):
         # Initialize variables here
         pass
