@@ -11,8 +11,6 @@ Created on Sat Aug  6 22:17:36 2016
         1. Retrieving data from an external source
         2. Opening, updating, creating database or csv files
 """
-
-from yahoo_finance import Share
 import quandl
 import settings
 import plots

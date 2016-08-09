@@ -4,4 +4,3 @@ scikit-learn
 numpy
 ipython
 scipy
-yahoo-finance
