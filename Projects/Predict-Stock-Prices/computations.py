@@ -12,14 +12,23 @@ class Financials():
     def __init__(self):
         pass
     
-    def rolling_mean(self, data, window):
+    def get_rolling_mean(self, data, window):
         prices = data["Adj. Close"]
         rm = prices.rolling(window, center = False).mean()
         return rm
         
-    # computer rolling standard deviation
-    def rolling_stv(self, data, window):
-        return pd.rolling_std(data, window)
+    # compute rolling standard deviation
+    def get_rolling_stv(self, data, window):
+        prices = data["Adj. Close"]
+        return prices.rolling(window, center = False).std()
+        
+    # compute bollinger bands
+    def get_bollinger_bands(self, data, window):
+        rolling_means = self.get_rolling_mean(data, window)
+        rolling_stv = self.get_rolling_stv(data, window)
+        upper_band = rolling_means + rolling_stv * 2
+        lower_band = rolling_means - rolling_stv * 2
+        return upper_band, lower_band
     
     def compute_daily_returns(self, dataframe):
         daily_returns = dataframe.copy() # copy dataframe
