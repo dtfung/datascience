@@ -5,26 +5,44 @@ Created on Sat Aug  6 22:09:17 2016
 @author: donaldfung
 """
 
-""" STORE ALL FILE NAMES HERE """
+""" GENERAL SETTINGS """
 import key
 
 # data directory
 data_dir = "data/"
-closing_prices_data = data_dir + "closing_prices"
+
+# file extensions
+csv = ".csv"
+sql = ".db"
+
+# csv filenames
+stock_data_csv = data_dir + "closing_prices" + csv
+
+# csv filenames in list
+list_of_csv_filenames = [stock_data_csv]
+
+# database filename
+stock_data_db = data_dir + "stock-data" + sql
+
 # a dataset containing ticker, name and sector of all companies listed on the snp500
 companies_abridged = data_dir + "constituents.csv"
 # data from the above dataset + fundamentals incl pe ratio, earnings per share, book value
 companies_detailed = data_dir + "constituents-financials.csv"
 
-csv = ".csv"
-sql = ".sqlite"
+# companies to be used in building dataset and training model
+companies = ["INTC, GM"] # for now, let's use Intel Corp and General Motors
 
+# data ranges
 start_date = "2010-01-01"
 end_date = "2016-07-31"
 
 # choose data source
 datasources = ["Yahoo", "Quandl"]
 active_datasource = datasources[1]
+
+# storage options - Use "database" or "csv"
+storage_options = ["database", "csv"]
+storage_option = storage_options[0]
 
 
 """ 

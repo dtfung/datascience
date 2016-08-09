@@ -5,7 +5,12 @@ Created on Sat Aug  6 22:17:36 2016
 @author: donaldfung
 """
 
-""" Retrieve and process raw data and create csv and sqlite database"""
+""" Use this file to interact with dataset
+
+    Main uses include:
+        1. Retrieving data from an external source
+        2. Opening, updating, creating database or csv files
+"""
 
 from yahoo_finance import Share
 import quandl
@@ -16,19 +21,38 @@ import prepare
 import pandas as pd
 import sqlite3
 
-def get_data():
-    # check if csv exists
-    closing_prices = settings.closing_prices_data + settings.csv
-    try:
-        data = pd.read_csv(closing_prices, index_col = "Unnamed: 0")
-        print "successfully loaded closing prices!"
-        return data
-    except:
-        print "no csv file"
-        
+def get_data(companies, storage_option):
+    if storage_option == "sql":
+        try:
+            # connect to database
+            conn = sqlite3.connect(database = settings.stock_data_db)
+            print "database open"  
+            # TODO: Update database 
+            """ check if company exists.  If yes, update with new stock data.  
+            Else, add company and respective data """
+        except:
+            # TODO: create empty database
+            create_database(companies)
+    elif storage_option == "csv":
+        try:
+            for filename in settings.list_of_csv_filenames:
+                # check if csv exists
+                closing_prices = settings.stock_data_csv
+                data = pd.read_csv(closing_prices, index_col = "Unnamed: 0")
+                print "successfully loaded closing prices!"
+                # TODO: update csv 
+                return data
+        except:
+            print "no csv files"
+            # TODO: create files
+            create_csv_files()
+            
+def create_csv_files():
     # Define data range
     start_date = settings.start_date
     end_date = settings.end_date
+    # TODO: specify features and create files 
+    """ NOTE: Code below creates csv file for closing prices only """
     dates = pd.date_range(start_date, end_date)
     # create empty dataframe with dates as index
     closing_prices = pd.DataFrame(index = dates)
@@ -51,11 +75,7 @@ def get_data():
     closing_prices = prepare.fill_missing_values(closing_prices)
     # save dataframe
     save_dataframe(closing_prices)
-    print "csv successfully saved!"
-    # save database
-    #create_database(closing_prices)
-    #print "databased successfully saved!"  
-    return closing_prices
+    print "csv successfully saved!" 
     
 def get_data_from_datasource(provider, ticker, start_date, end_date):
     if provider == "Yahoo":
@@ -72,7 +92,7 @@ def save_dataframe(df = None):
     closing_prices = settings.closing_prices_data + settings.csv
     df.to_csv(closing_prices, sep=',', encoding='utf-8')
 
-def create_database(df = None):
+def create_database(companies):
     closing_prices = settings.closing_prices_data + settings.sql
     conn = sqlite3.connect(closing_prices)
     df.to_sql(closing_prices, conn)
@@ -97,8 +117,14 @@ def adjusted_close(df1, df2, ticker, provider):
         df1 = df1.join(df_temp, how = 'outer')
     return df1
     
-data = get_data()
-#print data
+if __name__ == "__main__":
+    """ Takes a list of companies and gets data for them.  The data
+    is then stored in a database for later use.  
+    
+    Input: A list of company stock ticker symbols
+    """
+    get_data(settings.companies, settings.storage_option)
+
 #print data.median()
 #plots.plot_rolling_mean(dataframe = data, ticker = "AAL", window = 20)
 #plots.plot_stock_price_data(data)
