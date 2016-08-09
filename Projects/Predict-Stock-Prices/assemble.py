@@ -21,30 +21,50 @@ import prepare
 import pandas as pd
 import sqlite3
 
-def get_data(companies, storage_option):
-    if storage_option == "database":
-        # initialize Database Class
-        db = Database()
-        # Update database 
-        for company in companies:
-            # TODO: check if table exists
-            result = db.retrieve_table(company)  
-            if result:
-                print "table exists"
-    elif storage_option == "csv":
+class Data(object):
+    def __init__(self, company, storage_option):
+        self.company = company
+        self.storage_option = storage_option
+        self.dataframe = None
+        self.conn = None
+        self.features = settings.features
+        self.headers = settings.headers
+        self.endpoints = settings.endpoints
+        self.start_date = settings.start_date
+        self.end_date = settings.end_date
+        
+    def get_data(self):
         try:
-            for filename in settings.list_of_csv_filenames:
-                # check if csv exists
-                closing_prices = settings.stock_data_csv
-                data = pd.read_csv(closing_prices, index_col = "Unnamed: 0")
-                print "successfully loaded closing prices!"
-                # TODO: update csv 
-                return data
+            self.dataframe = self.create_dataframe()
+            for key, endpoint in self.endpoints.items():
+                if key == "Prices":
+                    results = quandl.get(endpoint, start_date = self.start_date, end_date = self.end_date)
+                    self.dataframe = self.create_dataframe(results)
+                    
+                    
+                results = quandl.get(endpoint, start_date = self.start_date, end_date = self.end_date)
+                    
         except:
-            print "no csv files"
-            # TODO: create files
-            create_csv_files()
+            print "error getting data"
             
+    def create_dataframe(self):
+        quandl.ApiConfig.api_key = settings.api_key
+        price_enpoint = self.endpoints["Prices"]
+        results = quandl.get(price_enpoint, start_date = self.start_date, end_date = self.end_date)
+        df = results[["Adj. Close", "Adj. Volume"]]
+
+        #df = pd.DataFrame(results, columns = column)
+        return df
+        
+    def save_data(self):
+        if self.storage_option == "database":
+            db = settings.stock_data_db
+            self.conn = sqlite3.connect(db)
+            # TODO: add column names
+            self.dataframe.to_sql(db, self.conn)
+        elif self.storage_option == "csv":
+            # TODO: save dataframe to csv
+            pass
 class Database(object):
     def __init__(self):
         # declare properties
@@ -53,7 +73,18 @@ class Database(object):
         
     def retrieve_table(self, table):
         self.connection = sqlite3.connect(self.database)
-        query = "CREATE TABLE IF NOT EXISTS {} (id integer, Name text)".format(table)
+        query = """CREATE TABLE IF NOT EXISTS {} (
+        id INTEGER, 
+        Symbol TEXT, 
+        Adj_Close REAL,
+        Volume REAL,
+        PE_Ratio REAL, 
+        Book_Value REAL, 
+        PB_Ratio REAL,
+        EPS REAL, 
+        Net_Revenue REAL, 
+        CurrentRatio REAL, 
+        Debt_Equity_Ratio RATIO)""".format(table)
         try:
             self.connection.execute(query)
             self.connection.commit()
@@ -149,7 +180,8 @@ if __name__ == "__main__":
     
     Input: A list of company stock ticker symbols
     """
-    get_data(settings.companies, settings.storage_option)
+    data = Data(settings.company, settings.storage_option)
+    data.get_data()
 
 #print data.median()
 #plots.plot_rolling_mean(dataframe = data, ticker = "AAL", window = 20)
