@@ -17,6 +17,10 @@ class Financials():
         rm = prices.rolling(window, center = False).mean()
         return rm
         
+    # computer rolling standard deviation
+    def rolling_stv(self, data, window):
+        return pd.rolling_std(data, window)
+    
     def compute_daily_returns(self, dataframe):
         daily_returns = dataframe.copy() # copy dataframe
         # computer returns for row 1 onwards
