@@ -22,17 +22,13 @@ import pandas as pd
 import sqlite3
 
 def get_data(companies, storage_option):
-    if storage_option == "sql":
-        try:
-            # connect to database
-            conn = sqlite3.connect(database = settings.stock_data_db)
-            print "database open"  
-            # TODO: Update database 
-            """ check if company exists.  If yes, update with new stock data.  
-            Else, add company and respective data """
-        except:
-            # TODO: create empty database
-            create_database(companies)
+    if storage_option == "database":
+        # initialize Database Class
+        db = Database()
+        # Update database 
+        for company in companies:
+            # TODO: check if company exists
+            pass                 
     elif storage_option == "csv":
         try:
             for filename in settings.list_of_csv_filenames:
@@ -47,6 +43,28 @@ def get_data(companies, storage_option):
             # TODO: create files
             create_csv_files()
             
+class Database(object):
+    def __init__(self):
+        # declare properties
+        database = settings.stock_data_db
+        self.connection = sqlite3.connect(database)
+        
+    def query(self, companies):
+        pass
+    
+    def create_column(self):
+        pass
+    
+    def create_table(self, name):
+        """ Create new table with 'id' column """
+        table_name = name
+        new_field = 'id' # name of the column
+        field_type = 'integer'  # column data type
+        c = self.connection.cursor()
+        c.execute('CREATE TABLE {tn} ({nf} {ft})'.format(tn=table_name, nf=new_field, ft=field_type))
+        self.connection.commit()
+        self.connection.close()
+        
 def create_csv_files():
     # Define data range
     start_date = settings.start_date
@@ -91,11 +109,6 @@ def get_data_from_datasource(provider, ticker, start_date, end_date):
 def save_dataframe(df = None):
     closing_prices = settings.closing_prices_data + settings.csv
     df.to_csv(closing_prices, sep=',', encoding='utf-8')
-
-def create_database(companies):
-    closing_prices = settings.closing_prices_data + settings.sql
-    conn = sqlite3.connect(closing_prices)
-    df.to_sql(closing_prices, conn)
     
 def adjusted_close(df1, df2, ticker, provider):
     if provider == "Yahoo":
