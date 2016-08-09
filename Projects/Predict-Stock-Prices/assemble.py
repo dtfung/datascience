@@ -27,8 +27,10 @@ def get_data(companies, storage_option):
         db = Database()
         # Update database 
         for company in companies:
-            # TODO: check if company exists
-            pass                 
+            # TODO: check if table exists
+            result = db.retrieve_table(company)  
+            if result:
+                print "table exists"
     elif storage_option == "csv":
         try:
             for filename in settings.list_of_csv_filenames:
@@ -46,16 +48,27 @@ def get_data(companies, storage_option):
 class Database(object):
     def __init__(self):
         # declare properties
-        database = settings.stock_data_db
-        self.connection = sqlite3.connect(database)
+        self.database = settings.stock_data_db
+        self.connection = sqlite3.connect(self.database)
         
-    def query(self, companies):
-        pass
-    
+    def retrieve_table(self, table):
+        self.connection = sqlite3.connect(self.database)
+        query = "CREATE TABLE IF NOT EXISTS {} (id integer, Name text)".format(table)
+        try:
+            self.connection.execute(query)
+            self.connection.commit()
+        except sqlite3.OperationalError:
+            print "table exists"
+        query = "SELECT * FROM {t}".format(t = table)
+        result = self.connection.execute(query)
+        self.connection.close()
+        return result
+        
     def create_column(self):
         pass
     
     def create_table(self, name):
+        self.connection = sqlite3.connect(self.database)
         """ Create new table with 'id' column """
         table_name = name
         new_field = 'id' # name of the column
