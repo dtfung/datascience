@@ -35,9 +35,9 @@ class Financials():
     # compute bollinger bands
     def get_bollinger_bands(self, data, window):
         rolling_means = self.get_rolling_mean(data, window)
-        rolling_stv = self.get_rolling_stv(data, window)
-        upper_band = rolling_means + rolling_stv * 2
-        lower_band = rolling_means - rolling_stv * 2
+        rolling_std = self.get_rolling_std(data, window)
+        upper_band = rolling_means + rolling_std * 2
+        lower_band = rolling_means - rolling_std * 2
         return upper_band, lower_band
     
     def get_daily_returns(self, data):
