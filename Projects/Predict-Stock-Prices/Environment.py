@@ -41,7 +41,7 @@ class Market():
     
     def get_state(self, df, window):
         df = df.ix[20:, 1:] # exclude price
-        # TODO: supply state to Q-Learning agent
-        states = [tuple(row) for row in df.values]
-        print states
+        for row in df.values:
+            state = tuple(row)
+            self.learner.update(state)
         
