@@ -19,5 +19,6 @@ class Market():
         upper, lower = financials.get_bollinger_bands(data, n) # get bollinger bands
         #self.learner.update(state)
         cumulative_returns = financials.get_cumulative_returns(data)
+        adj_close_sma = financials.get_close_SMA_ratio(data, n)
         
         

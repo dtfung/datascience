@@ -17,6 +17,12 @@ class Financials():
         rm = prices.rolling(window, center = False).mean()
         return rm
         
+    def get_close_SMA_ratio(self, data, window):
+        prices = data["Adj. Close"]
+        rm = self.get_rolling_mean(data, window)
+        ratio = prices[0:] / rm[0:]
+        return ratio
+        
     # compute rolling standard deviation
     def get_rolling_stv(self, data, window):
         prices = data["Adj. Close"]
