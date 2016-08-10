@@ -24,13 +24,12 @@ class Market():
         volume = data["Adj. Volume"]
         rolling_mean = financials.get_rolling_mean(data, n)# get rolling mean
         upper, lower = financials.get_bollinger_bands(data, n) # get bollinger bands
-        daily_returns = financials.get_daily_returns(data) # get daily returns
         cumulative_returns = financials.get_cumulative_returns(data) # get cumulative returns
         adj_close_sma = financials.get_close_SMA_ratio(data, n) # get adj.close to SMA ratio
         # add data to dataframe
         df = data[["Adj. Close"]]
         # dictionary of features
-        features = {"Volume": volume, "Rolling_Mean":rolling_mean, "Upper":upper, "Lower":lower,"Daily_Returns":daily_returns,
+        features = {"Volume": volume, "Rolling_Mean":rolling_mean, "Upper":upper, "Lower":lower,
         "Cumulative_Returns":cumulative_returns, "Close_SMA":adj_close_sma}
         for key, feature in features.items():
             column = [key]
@@ -44,5 +43,5 @@ class Market():
         df = df.ix[20:, 1:] # exclude price
         # TODO: supply state to Q-Learning agent
         states = [tuple(row) for row in df.values]
-        
+        print states
         
