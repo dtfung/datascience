@@ -30,7 +30,7 @@ headers = ["id", "Date", "Symbol", "Adj_Close", "Volume",
            "Net_Rev", "Current_Ratio", "Debt_Equity_Ratio"]
 
 # dataframe features
-features = ["Volume", "Rolling_Mean", "Upper", "Lower",
+features = ["Volume", "Rolling_Mean", "Bollinger_Lower", "Bollinger_Upper",
         "Cumulative_Returns", "Close_SMA"]
 
 # a dataset containing ticker, name and sector of all companies listed on the snp500
