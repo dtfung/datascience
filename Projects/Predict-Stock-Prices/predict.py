@@ -34,33 +34,35 @@ class Q_Learning():
             action = random.choice(self.actions) # random action chosen on first move
             # TODO: calculate reward
             """ for now, assume commission fees, dividend payouts aren't included """
-            reward = None
+            reward = 0
         
-        action = self.choose_action(state)
-        # TODO: calculate reward
-         """ for now, assume commission fees, dividend payouts aren't included """
-        reward = None
-        # TODO: update q-table with last state, action, reward and current state
-        
-        self.qLearn(self.lastState, self.lastAction, self.lastReward, self.state)
-        
-        self.lastState = self.state
+        else:
+            action = self.choose_action(state)
+            # TODO: calculate reward
+            """ for now, assume commission fees, dividend payouts aren't included """
+            reward = random.choice(range(0.00001, 1))
+            # TODO: update q-table with last state, action, reward and current state
+            
+            self.qLearn(self.lastState, self.lastAction, self.lastReward, self.state)
+            
+        self.lastState = state
         self.lastAction = action
-        self.lastReward = reward   
-    
+        self.lastReward = reward 
+        print reward
+        print action
+        
     def choose_action(self, state):
         q = [self.getQ(state, a) for a in self.actions]
         maxQ = max(q)
-    
         if random.random() < self.epsilon:
-        action = random.choice(self.actions)
+            action = random.choice(self.actions)
         else:
             count = q.count(maxQ)
             if count > 1:
                 best = [i for i in range(len(self.actions)) if q[i] == maxQ]
                 i = random.choice(best)
-                else:
-                    i = q.index(maxQ)
+            else:
+                i = q.index(maxQ)
 
                 action = self.actions[i]
         return action
@@ -79,6 +81,15 @@ class Q_Learning():
         # Update Q Values for the last state and action
         oldValue = self.qTable.get((state, action), 0.0)
         self.qTable[(state, action)] = oldValue + self.alpha * (reward + (self.gamma * maxQnew) - oldValue)
+        
+class Models():
+    def __init__(self, options, data):
+        self.models = options
+        self.data = data
+        
+    def partition_dataset(self, data):
+        pass
+    
 
 def run():
     #   Get stock price data
