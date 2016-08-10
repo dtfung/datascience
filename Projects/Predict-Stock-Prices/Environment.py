@@ -34,7 +34,7 @@ class Market():
         "Cumulative_Returns":cumulative_returns, "Close_SMA":adj_close_sma}
         for key, feature in features.items():
             column = [key]
-            discretized_data = prepare.discretize(feature, steps = 10)
+            discretized_data = prepare.discretize(feature, steps = settings.steps)
             temp_df = discretized_data.to_frame()
             temp_df.columns = [column]
             df = df.join(temp_df, how = "outer")
