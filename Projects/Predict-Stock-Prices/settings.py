@@ -55,6 +55,15 @@ storage_option = storage_options[0]
 
 # how many bins to divide data
 steps = 10
+
+# Learning Approach
+from enum import Enum
+class Approach(Enum):
+    model_based = 0
+    model_free = 1
+model_free = "Q_Learning"
+model_based = ["Linear Regression", "KNN"]
+approach = "model_based" # OR "model_free"
 """ 
 ----------------------------------------------------------------------
 QUANDL DATABASES """
