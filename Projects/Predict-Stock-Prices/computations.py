@@ -30,16 +30,17 @@ class Financials():
         lower_band = rolling_means - rolling_stv * 2
         return upper_band, lower_band
     
-    def compute_daily_returns(self, dataframe):
-        daily_returns = dataframe.copy() # copy dataframe
+    def get_daily_returns(self, data):
+        prices = data["Adj. Close"]
+        daily_returns = prices.copy() # copy dataframe
         # computer returns for row 1 onwards
-        daily_returns[1:] = (dataframe[1:] / dataframe[:-1].values) - 1
-        daily_returns.ix[0, :] = 0 # set daily returns for row 0 to 0
+        daily_returns[1:] = (prices[1:] / prices[:-1].values) - 1
+        daily_returns.ix[0] = 0 # set daily returns for row 0 to 0
         return daily_returns
         
-    def compute_cumulative_returns(self, dataframe, time):
-        t = time
-        cumulative_returns = dataframe.copy() # copy dataframe
-        cumulative_returns.ix[t, :] = (dataframe.ix[t, :] / dataframe.ix[0, :] - 1)
-        returns = cumulative_returns.ix[t, :]
-        return returns
+    def get_cumulative_returns(self, data):
+        prices = data["Adj. Close"]
+        cumulative_returns = prices.copy()
+        cumulative_returns[1:] = (prices[1:] / prices[0] - 1)
+        cumulative_returns[0] = 0
+        return cumulative_returns

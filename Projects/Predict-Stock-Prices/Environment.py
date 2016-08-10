@@ -18,5 +18,6 @@ class Market():
         rolling_mean = financials.get_rolling_mean(data, n)# get rolling mean
         upper, lower = financials.get_bollinger_bands(data, n) # get bollinger bands
         #self.learner.update(state)
+        cumulative_returns = financials.get_cumulative_returns(data)
         
         
