@@ -26,11 +26,11 @@ class Financials():
         return ratio
         
     # compute rolling standard deviation
-    def get_rolling_stv(self, data, window):
+    def get_rolling_std(self, data, window):
         prices = data["Adj. Close"]
         prices = prices.rolling(window, center = False).std()
         prices = prices.shift(periods = 1)
-        return 
+        return prices
         
     # compute bollinger bands
     def get_bollinger_bands(self, data, window):

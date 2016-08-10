@@ -21,15 +21,15 @@ class Market():
         data = self.data.copy()
         financials = computations.Financials()
         n = 20 # look back n number of days / window
-        volume = data["Adj. Volume"]
         rolling_mean = financials.get_rolling_mean(data, n)# get rolling mean
+        rolling_std = financials.get_rolling_std(data, n) # get rolling std
         bollinger_upper, bollinger_lower = financials.get_bollinger_bands(data, n) # get bollinger bands
         cumulative_returns = financials.get_cumulative_returns(data) # get cumulative returns
         adj_close_sma = financials.get_close_SMA_ratio(data, n) # get adj.close to SMA ratio
         # add data to dataframe
         df = data[["Adj. Close"]]
         # dictionary of features
-        features = {"Volume": volume, "Rolling_Mean":rolling_mean, "Bollinger_Upper":bollinger_upper, "Bollinger_Lower":bollinger_lower,
+        features = {"Rolling_Std": rolling_std, "Rolling_Mean":rolling_mean, "Bollinger_Upper":bollinger_upper, "Bollinger_Lower":bollinger_lower,
         "Cumulative_Returns":cumulative_returns, "Close_SMA":adj_close_sma}
         for key, feature in features.items():
             column = [key]
