@@ -12,11 +12,16 @@ import Environment
 class Q_Learning():
     def __init__(self, data):
         # Initialize variables here
-        pass
-    
+        self.prices = data["Adj. Close"]
+        self.count = 0
+        
     def update(self, state):
         # Get new state from environment
-        pass
+        self.count += 1
+        print state
+        if self.count == 10:
+            
+            return
 
 def run():
     #   Get stock price data
