@@ -44,4 +44,12 @@ class Market():
         for row in df.values:
             state = tuple(row)
             self.learner.update(state)
+            
+    def get_reward(self, action):
+        
+        # TODO: check if a position is open
+        # TODO: get position info (direction, date, quantity, open price)
+        # TODO: calculate reward based on action (if hold, do nothing)
+        
+        return reward
         
