@@ -16,10 +16,13 @@ class Q_Learning():
         self.count = 0
         
     def update(self, state):
-        # Get new state from environment
-        self.count += 1
-        print state
-        if self.count == 10:
+        """ Get new state from environment
+        
+        input:  state = (volume, rolling_mean, upper, lower,  cumulative returns close_sma)
+                type = tuple
+        """
+        
+        
             
             return
 
