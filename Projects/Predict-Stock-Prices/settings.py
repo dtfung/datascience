@@ -30,9 +30,8 @@ headers = ["id", "Date", "Symbol", "Adj_Close", "Volume",
            "Net_Rev", "Current_Ratio", "Debt_Equity_Ratio"]
 
 # dataframe features
-features = ["Adj. Close", "Adj. Volume",
-           "PE_Ratio", "Book_Value", "PB_Ratio", "EPS", 
-           "Net_Rev", "Current_Ratio", "Debt_Equity_Ratio"]
+features = ["Volume", "Rolling_Mean", "Upper", "Lower",
+        "Cumulative_Returns", "Close_SMA"]
 
 # a dataset containing ticker, name and sector of all companies listed on the snp500
 companies_abridged = data_dir + "constituents.csv"
