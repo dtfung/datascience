@@ -28,7 +28,9 @@ class Financials():
     # compute rolling standard deviation
     def get_rolling_stv(self, data, window):
         prices = data["Adj. Close"]
-        return prices.rolling(window, center = False).std()
+        prices = prices.rolling(window, center = False).std()
+        prices = prices.shift(periods = 1)
+        return 
         
     # compute bollinger bands
     def get_bollinger_bands(self, data, window):
