@@ -10,6 +10,7 @@ import prepare
 import assemble
 import pandas as pd
 import settings
+
 class Market():
     def __init__(self, data):
         self.state = None
@@ -42,7 +43,6 @@ class Market():
     def get_state(self, df, window):
         df = df.ix[20:, 1:] # exclude price
         # TODO: supply state to Q-Learning agent
-        
-    
+        states = [tuple(row) for row in df.values]
         
         
