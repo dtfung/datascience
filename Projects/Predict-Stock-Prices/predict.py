@@ -10,7 +10,7 @@ import assemble
 import Environment
 
 class Q_Learning():
-    def __init__(self):
+    def __init__(self, data):
         # Initialize variables here
         pass
     
@@ -23,8 +23,9 @@ def run():
     data = assemble.Data(settings.company, settings.storage_option)
     df = data.create_dataframe()
     #   Setup environment
-    env = Environment.Market()
-    env.get_financials(df)
+    env = Environment.Market(df)
+    env.get_financials()
+    
 if __name__ == "__main__":
     run()
     
