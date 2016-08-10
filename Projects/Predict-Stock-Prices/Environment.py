@@ -20,10 +20,8 @@ class Market():
     def get_learning_method(self):
         approach = settings.approach
         if approach == "model_based":
-            self.learner = model_based
-            return settings.Approach.model_based
+            return settings.Approach.model_based   
         else:
-            self.learner = predict.Q_Learning(self.data)
             return settings.Approach.model_free
     
     def get_financials(self):
@@ -35,32 +33,36 @@ class Market():
         bollinger_upper, bollinger_lower = financials.get_bollinger_bands(data, n) # get bollinger bands
         adj_close_sma = financials.get_close_SMA_ratio(data, n) # get adj.close to SMA ratio
         # add data to dataframe
-        df = data[["Adj. Close"]]
+        df = data.copy()
         # dictionary of features
         features = {"Rolling_Std": rolling_std, "Rolling_Mean":rolling_mean, "Bollinger_Upper":bollinger_upper, "Bollinger_Lower":bollinger_lower,
         "Close_SMA":adj_close_sma}
+        self.add_features(dataframe = df, features = features)
         
-        # get learning approach
-        approach = self.get_learning_method
+    def add_features(self, dataframe, features):
+        approach = self.get_learning_method # get learning approach
         if approach == settings.Approach.model_free:
             for key, feature in features.items():
                 column = [key]
                 discretized_data = prepare.discretize(feature, steps = settings.steps)
                 temp_df = discretized_data.to_frame()
                 temp_df.columns = [column]
-                df = df.join(temp_df, how = "outer")
-            self.get_state(df, n)
+                dataframe = dataframe.join(temp_df, how = "outer")
+            self.get_state(dataframe)
         else:
             for key, feature in features.items():
                 column = [key]
                 temp_df = feature.to_frame()
                 temp_df.columns = [column]
-                df = df.join(temp_df, how = "outer")
-    
-    def get_state(self, df, window):
+                dataframe = dataframe.join(temp_df, how = "outer")
+            self.learner = predict.Models(options = settings.models, data = dataframe)
+            self.learner.partition_dataset()
+            
+    def get_state(self, df):
         df = df.ix[20:, 1:] # exclude price
         for row in df.values:
             state = tuple(row)
+            self.learner = predict.Q_Learning(self.data)
             self.learner.update(state)
             
     def get_reward(self, action):
