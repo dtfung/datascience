@@ -5,6 +5,7 @@ Created on Sat Aug  6 21:51:23 2016
 @author: donaldfung
 """
 import pandas as pd
+import numpy as np
 """ DATA PREPROCESSING """
 
 def normalize_data(df = None):
@@ -17,3 +18,8 @@ def fill_missing_values(dataframe):
     dataframe.fillna(method = "ffill", inplace = True)
     dataframe.fillna(method = "bfill", inplace = True)
     return dataframe
+
+def discretize(data, steps):
+    # Quantile-based discretization function
+    factor = pd.qcut(data, q = steps, labels = range(0, 10))
+    return factor
