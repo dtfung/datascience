@@ -15,6 +15,8 @@ class Financials():
     def get_rolling_mean(self, data, window):
         prices = data["Adj. Close"]
         rm = prices.rolling(window, center = False).mean()
+        # shift index by 1 so as to not use current price in calc
+        rm = rm.shift(periods = 1)
         return rm
         
     def get_close_SMA_ratio(self, data, window):
