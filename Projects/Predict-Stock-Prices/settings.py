@@ -62,7 +62,7 @@ class Approach(Enum):
     model_based = 0
     model_free = 1
 model_free = "Q_Learning"
-model_based = ["Linear Regression", "KNN"]
+models = ["Linear Regression", "KNN"]
 approach = "model_based" # OR "model_free"
 """ 
 ----------------------------------------------------------------------
