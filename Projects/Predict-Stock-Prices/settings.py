@@ -30,7 +30,7 @@ headers = ["id", "Date", "Symbol", "Adj_Close", "Volume",
            "Net_Rev", "Current_Ratio", "Debt_Equity_Ratio"]
 
 # dataframe features
-features = ["Adj_Close", "Volume",
+features = ["Adj. Close", "Adj. Volume",
            "PE_Ratio", "Book_Value", "PB_Ratio", "EPS", 
            "Net_Rev", "Current_Ratio", "Debt_Equity_Ratio"]
 
