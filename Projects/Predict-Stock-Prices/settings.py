@@ -54,7 +54,8 @@ active_datasource = datasources[1]
 storage_options = ["database", "csv"]
 storage_option = storage_options[0]
 
-
+# how many bins to divide data
+steps = 10
 """ 
 ----------------------------------------------------------------------
 QUANDL DATABASES """
