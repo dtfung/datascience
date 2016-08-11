@@ -9,6 +9,8 @@ import settings
 import assemble
 import Environment
 import random
+import pandas as pd
+import prepare
     
 class Q_Learning():
     def __init__(self, data):
@@ -87,10 +89,18 @@ class Models():
         self.models = options
         self.data = data
         
-    def partition_dataset(self, data):
-        pass
-    
-
+    def partition_dataset(self):
+        self.data.dropna(inplace = True) # remove rows with NaN values
+        X = self.data.drop(["Adj. Close", "Adj. Volume"], axis = 1)
+        y = self.data[["Adj. Close"]]
+        train_set_size = prepare.train_set_size(X)
+        test_set_size = int(X.shape[0] * settings.test_set_size)
+        X_train = X[:train_set_size]
+        y_train = y[:train_set_size]
+        X_test = X[:test_set_size]
+        y_test = y[:test_set_size]
+        return X_train, y_train, X_test, y_test
+                
 def run():
     #   Get stock price data
     data = assemble.Data(settings.company, settings.storage_option)
