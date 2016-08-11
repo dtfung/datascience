@@ -40,7 +40,7 @@ class Market():
         self.add_features(dataframe = df, features = features)
         
     def add_features(self, dataframe, features):
-        approach = self.get_learning_method # get learning approach
+        approach = self.get_learning_method() # get learning approach
         if approach == settings.Approach.model_free:
             for key, feature in features.items():
                 column = [key]
@@ -48,6 +48,7 @@ class Market():
                 temp_df = discretized_data.to_frame()
                 temp_df.columns = [column]
                 dataframe = dataframe.join(temp_df, how = "outer")
+            self.learner = predict.Q_Learning(self.data)
             self.get_state(dataframe)
         else:
             for key, feature in features.items():
@@ -55,15 +56,18 @@ class Market():
                 temp_df = feature.to_frame()
                 temp_df.columns = [column]
                 dataframe = dataframe.join(temp_df, how = "outer")
-            self.learner = predict.Models(options = settings.models, data = dataframe)
+            self.learner = predict.Models(data = dataframe)
             self.learner.partition_dataset()
             
     def get_state(self, df):
-        df = df.ix[20:, 1:] # exclude price
+        df = df.dropna() # exclude price
+        features = settings.features
+        df = df[features]
+        count = 0
         for row in df.values:
             state = tuple(row)
-            self.learner = predict.Q_Learning(self.data)
-            self.learner.update(state)
+            self.learner.update(state, count)
+            count += 1
             
     def get_reward(self, action):
         

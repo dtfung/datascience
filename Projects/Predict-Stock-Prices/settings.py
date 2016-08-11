@@ -62,8 +62,10 @@ class Approach(Enum):
     model_based = 0
     model_free = 1
 model_free = "Q_Learning"
-models = ["Linear Regression", "KNN"]
-approach = "model_based" # OR "model_free"
+approach = "model_free" # OR "model_free"
+
+class Action(Enum):
+    sell = - 1
 
 # Model Parameters
 train_set_size = .8

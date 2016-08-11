@@ -11,8 +11,10 @@ import Environment
 import random
 import pandas as pd
 import prepare
+import computations
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_absolute_error
+from sklearn.neighbors import KNeighborsClassifier
 
 class Models():
     def __init__(self, data):
@@ -21,9 +23,12 @@ class Models():
     def partition_dataset(self):
         self.data.dropna(inplace = True) # remove rows with NaN values
         # Extract features into a new dataframe
-        X = self.data.drop(["Adj. Close", "Adj. Volume"], axis = 1)
+        features = settings.features
+        #X = self.data.drop(["Adj. Close", "Adj. Volume"], axis = 1)
+        X = self.data[features]
         # get label
-        y = self.data[["Adj. Close"]]
+        y = self.data["Adj. Close"]
+        
         train_set_size = prepare.train_set_size(X)
         test_set_size = int(X.shape[0] * settings.test_set_size)
         X_train = X[:train_set_size]
@@ -33,17 +38,20 @@ class Models():
         self.fit_model(X_train, y_train, X_test, y_test)
     
     def fit_model(self, X_train, y_train, X_test, y_test):
-        # Linear Regression
+        # basic Linear Regression 
         lr = LinearRegression()
         lr.fit(X_train, y_train)
         y_train_pred = lr.predict(X_train)
         y_test_pred = lr.predict(X_test)
         train_error = mean_absolute_error(y_train, y_train_pred)
         test_error = mean_absolute_error(y_test, y_test_pred)
-        
+        print test_error
+        print train_error
+
 class Q_Learning():
     def __init__(self, data):
         # Initialize variables here
+        self.data = data
         self.prices = data["Adj. Close"]
         self.actions = ["buy", "hold", "sell"] 
         self.lastState = None
@@ -54,7 +62,7 @@ class Q_Learning():
         self.alpha = 0.1 # learning rate
         self.gamma = 0.1 # discount rate
         
-    def update(self, state):
+    def update(self, state, count):
         """ Get new state from environment
         
         input:  state = (volume, rolling_mean, upper, lower,  cumulative returns close_sma)
@@ -65,16 +73,14 @@ class Q_Learning():
             action = random.choice(self.actions) # random action chosen on first move
             # TODO: calculate reward
             """ for now, assume commission fees, dividend payouts aren't included """
-            reward = 0
+            reward = self.get_reward(action, count)
         
         else:
             action = self.choose_action(state)
-            # TODO: calculate reward
             """ for now, assume commission fees, dividend payouts aren't included """
-            reward = random.choice(range(0.00001, 1))
-            # TODO: update q-table with last state, action, reward and current state
-            
-            self.qLearn(self.lastState, self.lastAction, self.lastReward, self.state)
+            reward = self.get_reward(action, count)
+            # update Q-table
+            self.qLearn(self.lastState, self.lastAction, self.lastReward, state)
             
         self.lastState = state
         self.lastAction = action
@@ -95,8 +101,23 @@ class Q_Learning():
             else:
                 i = q.index(maxQ)
 
-                action = self.actions[i]
-        return action
+            action = self.actions[i]
+            return action
+    
+    def get_reward(self, action, count):
+        financials = computations.Financials()
+        daily_returns_list = financials.get_daily_returns(self.data) # list of daily returns
+        daily_return = daily_returns_list.ix[count] # return for a chosen day
+        if daily_return == 0.0:
+            return 0
+        elif action == "buy":
+            return daily_return
+        elif action == "sell" and daily_return < 0:
+            return daily_return
+        elif action == "sell" and daily_return > 0:
+            return - daily_return
+        elif action == "hold":
+            return 0 
         
     # Find the max state-action value in the current state and use it to update the Q table
     def qLearn(self, lastState, lastAction, lastReward, state):
