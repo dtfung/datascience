@@ -64,9 +64,6 @@ class Approach(Enum):
 model_free = "Q_Learning"
 approach = "model_free" # OR "model_free"
 
-class Action(Enum):
-    sell = - 1
-
 # Model Parameters
 train_set_size = .8
 test_set_size = .2

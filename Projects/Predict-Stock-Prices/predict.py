@@ -24,7 +24,6 @@ class Models():
         self.data.dropna(inplace = True) # remove rows with NaN values
         # Extract features into a new dataframe
         features = settings.features
-        #X = self.data.drop(["Adj. Close", "Adj. Volume"], axis = 1)
         X = self.data[features]
         # get label
         y = self.data["Adj. Close"]
