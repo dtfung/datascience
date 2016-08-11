@@ -11,7 +11,36 @@ import Environment
 import random
 import pandas as pd
 import prepare
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_absolute_error
+
+class Models():
+    def __init__(self, data):
+        self.data = data
+        
+    def partition_dataset(self):
+        self.data.dropna(inplace = True) # remove rows with NaN values
+        # Extract features into a new dataframe
+        X = self.data.drop(["Adj. Close", "Adj. Volume"], axis = 1)
+        # get label
+        y = self.data[["Adj. Close"]]
+        train_set_size = prepare.train_set_size(X)
+        test_set_size = int(X.shape[0] * settings.test_set_size)
+        X_train = X[:train_set_size]
+        y_train = y[:train_set_size]
+        X_test = X[-test_set_size:]
+        y_test = y[-test_set_size:]
+        self.fit_model(X_train, y_train, X_test, y_test)
     
+    def fit_model(self, X_train, y_train, X_test, y_test):
+        # Linear Regression
+        lr = LinearRegression()
+        lr.fit(X_train, y_train)
+        y_train_pred = lr.predict(X_train)
+        y_test_pred = lr.predict(X_test)
+        train_error = mean_absolute_error(y_train, y_train_pred)
+        test_error = mean_absolute_error(y_test, y_test_pred)
+        
 class Q_Learning():
     def __init__(self, data):
         # Initialize variables here
@@ -83,24 +112,7 @@ class Q_Learning():
         # Update Q Values for the last state and action
         oldValue = self.qTable.get((state, action), 0.0)
         self.qTable[(state, action)] = oldValue + self.alpha * (reward + (self.gamma * maxQnew) - oldValue)
-        
-class Models():
-    def __init__(self, options, data):
-        self.models = options
-        self.data = data
-        
-    def partition_dataset(self):
-        self.data.dropna(inplace = True) # remove rows with NaN values
-        X = self.data.drop(["Adj. Close", "Adj. Volume"], axis = 1)
-        y = self.data[["Adj. Close"]]
-        train_set_size = prepare.train_set_size(X)
-        test_set_size = int(X.shape[0] * settings.test_set_size)
-        X_train = X[:train_set_size]
-        y_train = y[:train_set_size]
-        X_test = X[:test_set_size]
-        y_test = y[:test_set_size]
-        return X_train, y_train, X_test, y_test
-                
+                     
 def run():
     #   Get stock price data
     data = assemble.Data(settings.company, settings.storage_option)
