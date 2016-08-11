@@ -57,35 +57,36 @@ class Q_Learning():
         self.lastAction = None
         self.lastReward = None
         self.qTable = {}
-        self.epsilon = 0.05 # exploration rate
-        self.alpha = 0.1 # learning rate
+        self.epsilon = 0.01 # exploration rate
+        self.alpha = 0.2 # learning rate
         self.gamma = 0.1 # discount rate
+        self.error = 0.0
+        self.count = 1
+        
+        self.crash = []
         
     def update(self, state, count):
-        """ Get new state from environment
-        
-        input:  state = (volume, rolling_mean, upper, lower,  cumulative returns close_sma)
-                type = tuple
-        """
-        # TODO: first move
+        self.count += 1
         if self.lastState is None: 
             action = random.choice(self.actions) # random action chosen on first move
-            # TODO: calculate reward
             """ for now, assume commission fees, dividend payouts aren't included """
             reward = self.get_reward(action, count)
-        
         else:
             action = self.choose_action(state)
+            #print "action = ", action
             """ for now, assume commission fees, dividend payouts aren't included """
             reward = self.get_reward(action, count)
             # update Q-table
-            self.qLearn(self.lastState, self.lastAction, self.lastReward, state)
-            
+            try:
+                self.qLearn(self.lastState, self.lastAction, self.lastReward, state)
+            except:
+                self.crash.append((action, reward))
         self.lastState = state
         self.lastAction = action
         self.lastReward = reward 
-        print reward
-        print action
+        
+        error = (self.error/self.count)*100
+        print error
         
     def choose_action(self, state):
         q = [self.getQ(state, a) for a in self.actions]
@@ -101,7 +102,7 @@ class Q_Learning():
                 i = q.index(maxQ)
 
             action = self.actions[i]
-            return action
+        return action
     
     def get_reward(self, action, count):
         financials = computations.Financials()
@@ -109,11 +110,15 @@ class Q_Learning():
         daily_return = daily_returns_list.ix[count] # return for a chosen day
         if daily_return == 0.0:
             return 0
-        elif action == "buy":
+        elif action == "buy" and daily_return < 0:
+            self.error += 1
+            return daily_return
+        elif action == "buy" and daily_return > 0:
             return daily_return
         elif action == "sell" and daily_return < 0:
             return daily_return
         elif action == "sell" and daily_return > 0:
+            self.error += 1
             return - daily_return
         elif action == "hold":
             return 0 
