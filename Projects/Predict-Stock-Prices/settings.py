@@ -64,6 +64,10 @@ class Approach(Enum):
 model_free = "Q_Learning"
 models = ["Linear Regression", "KNN"]
 approach = "model_based" # OR "model_free"
+
+# Model Parameters
+train_set_size = .8
+test_set_size = .2
 """ 
 ----------------------------------------------------------------------
 QUANDL DATABASES """
