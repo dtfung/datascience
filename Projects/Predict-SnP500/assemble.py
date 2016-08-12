@@ -12,6 +12,8 @@ import settings
 class Data():
     def __init__(self):
         self.data = None
+        self.X = None
+        self.y = None
         
     def read(self):
         filename = settings.filename
@@ -39,9 +41,8 @@ class Data():
             df.columns = [column]
             self.data = self.data.join(df, how = "outer", sort = False)
         self.data.dropna(axis = 0, inplace = True)
-        X, y = self.partition_data()
-        
-        
+        self.X, self.y = self.partition_data()
+         
     def partition_data(self):
         feature_list = settings.features
         target = settings.target
