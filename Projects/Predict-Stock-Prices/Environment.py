@@ -49,26 +49,20 @@ class Market():
         sma5_to_sma30 = financials.get_ratio(moving_average_five_day, moving_average_thirty_day)  # ratio between 5 day SMA and 30 day SMA
         std5_to_std30 = financials.get_ratio(rolling_std_five_day, rolling_std_thirty_day) # ration between 5 day STD and 30 day STD
         
-        # add data to dataframe
         df = data.copy()
-        '''
-                    
-                    
+        features = {
+                    "SMA_5d":moving_average_five_day,
+                    "SMA_30d":moving_average_thirty_day,
+                    "SMA_1yr":moving_average_one_year,
+                    "STD_5d":rolling_std_five_day,
+                    "STD_30d":rolling_std_thirty_day,
+                    "STD_1yr":rolling_std_one_year, 
                     "Bollinger_Upper_5d":bollinger_upper_five_day,
                     "Bollinger_Upper_30d":bollinger_upper_thirty_day,
                     "Bollinger_Upper_1yr":bollinger_upper_one_year,
                     "Bollinger_Lower_5d":five_daybollinger_lower_five_day,
                     "Bollinger_Lower_30d":five_daybollinger_lower_thirty_day,
                     "Bollinger_Lower_1yr":five_daybollinger_lower_one_year,
-                    ,'''
-        features = {
-                    "SMA_5d":moving_average_five_day,
-                    
-                    "SMA_30d":moving_average_thirty_day,
-                    "SMA_1yr":moving_average_one_year,
-                    "STD_5d":rolling_std_five_day,
-                    "STD_30d":rolling_std_thirty_day,
-                    "STD_1yr":rolling_std_one_year, 
                     "Close_SMA":adj_close_sma,
                     "SMA5_to_SMA30":sma5_to_sma30,
                     "std5_to_std30":std5_to_std30
