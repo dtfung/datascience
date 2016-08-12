@@ -6,14 +6,17 @@ Created on Fri Aug 12 11:41:52 2016
 """
 
 import pandas as pd
+import numpy as np
 import features
 import settings
 
 class Data():
     def __init__(self):
         self.data = None
-        self.X = None
-        self.y = None
+        self.X_train = None
+        self.X_testt = None
+        self.y_train = None
+        self.y_test = None
         
     def read(self):
         filename = settings.filename
@@ -49,12 +52,31 @@ class Data():
         X = self.data[feature_list]
         y = self.data[target]
         X = self.normalize(X)
-        return X, y
+        self.X_train, self.y_train, self.X_test, self.y_test = self.partition(X, y)
+    
+    def partition(self, X, y):
+        train_length = self.train_set_size(X)
+        test_length = int(X.shape[0] * settings.test_set_size)
+        X_train = X[:train_length]
+        y_train = y[:train_length]
+        y_train = y_train.shift(periods = 1)
+        y_train.iloc[0]= 0
+        X_test = X[-test_length:]
+        y_test = y[-test_length:]
+        y_test = y_test.shift(periods = 1)
+        y_test.iloc[0] = 0
+        return X_train, y_train, X_test, y_test
 
     def normalize(self, data):
         starting_price = data.ix[0, :]
         data = data/starting_price 
         return data
+    
+    def train_set_size(self, X):
+        X = X.shape[0] * settings.train_set_size
+        size = np.array([X])
+        size = int(np.ceil(size))
+        return size 
     
     
 
