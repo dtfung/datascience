@@ -24,6 +24,10 @@ class Financials():
         rm = self.get_rolling_mean(data, window)
         ratio = prices[0:] / rm[0:]
         return ratio
+    
+    def get_ratio(self, ma1, ma2):
+        ratio = ma1/ma2
+        return ratio
         
     # compute rolling standard deviation
     def get_rolling_std(self, data, window):
@@ -45,7 +49,7 @@ class Financials():
         daily_returns = prices.copy() # copy dataframe
         # computer returns for row 1 onwards
         daily_returns[1:] = (prices[1:] / prices[:-1].values) - 1
-        daily_returns.ix[0] = 0 # set daily returns for row 0 to 0
+        daily_returns.ix[0] = 0
         return daily_returns
         
     def get_cumulative_returns(self, data):
