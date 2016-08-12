@@ -14,7 +14,7 @@ class Data():
     def __init__(self):
         self.data = None
         self.X_train = None
-        self.X_testt = None
+        self.X_test = None
         self.y_train = None
         self.y_test = None
         
@@ -44,7 +44,7 @@ class Data():
             df.columns = [column]
             self.data = self.data.join(df, how = "outer", sort = False)
         self.data.dropna(axis = 0, inplace = True)
-        self.X, self.y = self.extract_X_and_y()
+        self.extract_X_and_y()
          
     def extract_X_and_y(self):
         feature_list = settings.features
