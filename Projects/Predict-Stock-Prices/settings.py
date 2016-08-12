@@ -30,8 +30,23 @@ headers = ["id", "Date", "Symbol", "Adj_Close", "Volume",
            "Net_Rev", "Current_Ratio", "Debt_Equity_Ratio"]
 
 # dataframe features
-features = ["Rolling_Mean", "Bollinger_Lower", "Bollinger_Upper",
-        "Rolling_Std", "Close_SMA"]
+features = [
+            "SMA_5d", 
+            "SMA_30d",
+            "SMA_1yr",
+            "STD_5d",
+            "STD_30d",
+            "STD_1yr",
+            "Bollinger_Upper_5d",
+            "Bollinger_Upper_30d",
+            "Bollinger_Upper_1yr",
+            "Bollinger_Lower_5d",
+            "Bollinger_Lower_30d",
+            "Bollinger_Lower_1yr",
+            "Close_SMA",
+            "SMA5_to_SMA30",
+            "std5_to_std30"
+            ]
 
 # a dataset containing ticker, name and sector of all companies listed on the snp500
 companies_abridged = data_dir + "constituents.csv"
@@ -39,10 +54,10 @@ companies_abridged = data_dir + "constituents.csv"
 companies_detailed = data_dir + "constituents-financials.csv"
 
 # companies to be used in building dataset and training model
-company = "INTC" # for now, let's use Intel Corp 
+company = "AET" # for now, let's use Intel Corp  
 
 # data ranges
-start_date = "2010-01-01"
+start_date = "1980-01-01"
 end_date = "2016-07-31"
 
 # choose data source
@@ -54,7 +69,10 @@ storage_options = ["database", "csv"]
 storage_option = storage_options[0]
 
 # how many bins to divide data
-steps = 10
+steps = 20
+
+# time frame used in moving avg calculation 
+time_frame = [5, 30, 365]
 
 # Learning Approach
 from enum import Enum
@@ -62,7 +80,7 @@ class Approach(Enum):
     model_based = 0
     model_free = 1
 model_free = "Q_Learning"
-approach = "model_free" # OR "model_free"
+approach = "model_based" # OR "model_free"
 
 # Model Parameters
 train_set_size = .8
