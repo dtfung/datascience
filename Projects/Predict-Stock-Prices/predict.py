@@ -58,15 +58,16 @@ class Q_Learning():
         self.lastReward = None
         self.qTable = {}
         self.epsilon = 0.01 # exploration rate
-        self.alpha = 0.2 # learning rate
-        self.gamma = 0.1 # discount rate
-        self.error = 0.0
-        self.count = 1
-        
+        self.alpha = 0.5 # learning rate
+        self.gamma = 0.5 # discount rate
         self.crash = []
         
+        
+        self.performance = Performance()
+    
+        
     def update(self, state, count):
-        self.count += 1
+        self.performance.trades += 1
         if self.lastState is None: 
             action = random.choice(self.actions) # random action chosen on first move
             """ for now, assume commission fees, dividend payouts aren't included """
@@ -85,9 +86,6 @@ class Q_Learning():
         self.lastAction = action
         self.lastReward = reward 
         
-        error = (self.error/self.count)*100
-        print error
-        
     def choose_action(self, state):
         q = [self.getQ(state, a) for a in self.actions]
         maxQ = max(q)
@@ -100,28 +98,31 @@ class Q_Learning():
                 i = random.choice(best)
             else:
                 i = q.index(maxQ)
-
             action = self.actions[i]
         return action
     
     def get_reward(self, action, count):
         financials = computations.Financials()
-        daily_returns_list = financials.get_daily_returns(self.data) # list of daily returns
-        daily_return = daily_returns_list.ix[count] # return for a chosen day
-        if daily_return == 0.0:
-            return 0
-        elif action == "buy" and daily_return < 0:
-            self.error += 1
-            return daily_return
-        elif action == "buy" and daily_return > 0:
-            return daily_return
-        elif action == "sell" and daily_return < 0:
-            return daily_return
-        elif action == "sell" and daily_return > 0:
-            self.error += 1
-            return - daily_return
-        elif action == "hold":
-            return 0 
+        daily_returns_list = financials.get_daily_returns(self.data) # list of daily return
+        if count < len(daily_returns_list - 1):
+            daily_return = daily_returns_list.ix[count + 1] # return for a chosen day
+            if daily_return == 0.0:
+                return 0
+            elif action == "buy" and daily_return < 0:
+                self.performance.losses += 1
+                return daily_return
+            elif action == "buy" and daily_return > 0:
+                self.performance.wins+=1
+                return daily_return
+            elif action == "sell" and daily_return < 0:
+                self.performance.wins+=1
+                return daily_return
+            elif action == "sell" and daily_return > 0:
+                self.performance.losses += 1
+                return - daily_return
+            elif action == "hold":
+                self.performance.hold += 1 
+                return 0 
         
     # Find the max state-action value in the current state and use it to update the Q table
     def qLearn(self, lastState, lastAction, lastReward, state):
@@ -137,7 +138,22 @@ class Q_Learning():
         # Update Q Values for the last state and action
         oldValue = self.qTable.get((state, action), 0.0)
         self.qTable[(state, action)] = oldValue + self.alpha * (reward + (self.gamma * maxQnew) - oldValue)
-                     
+        
+class Performance():
+    def __init__(self):
+        self.losses = 0
+        self.wins = 0
+        self.hold = 0
+        self.trades = 0
+        self.win_loss_ratio = 0.0
+    
+    def show(self):
+        print "Losses%:",self.losses/self.trades
+        print "Wins%:",self.wins/self.trades
+        print "Hold%:",self.hold/self.trades
+        self.win_loss_ratio = self.wins/self.losses
+        print self.win_loss_ratio
+              
 def run():
     #   Get stock price data
     data = assemble.Data(settings.company, settings.storage_option)
