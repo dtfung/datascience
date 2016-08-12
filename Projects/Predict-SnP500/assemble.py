@@ -9,6 +9,7 @@ import pandas as pd
 import numpy as np
 import features
 import settings
+import predict
 
 class Data():
     def __init__(self):
@@ -53,6 +54,8 @@ class Data():
         y = self.data[target]
         X = self.normalize(X)
         self.X_train, self.y_train, self.X_test, self.y_test = self.partition(X, y)
+        model = predict.Model(self.X_train, self.y_train, self.X_test, self.y_test)
+        model.predict()
     
     def partition(self, X, y):
         train_length = self.train_set_size(X)
