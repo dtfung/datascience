@@ -41,9 +41,9 @@ class Data():
             df.columns = [column]
             self.data = self.data.join(df, how = "outer", sort = False)
         self.data.dropna(axis = 0, inplace = True)
-        self.X, self.y = self.partition_data()
+        self.X, self.y = self.extract_X_and_y()
          
-    def partition_data(self):
+    def extract_X_and_y(self):
         feature_list = settings.features
         target = settings.target
         X = self.data[feature_list]
