@@ -20,12 +20,13 @@ class Financials():
         self.prices = self.data[self.target]
     
     def get_sma(self, window):
-        rm = self.prices.rolling(window, center = False).mean()
-        rm = rm.shift(periods = 1)
-        return rm
+        rm_price = self.prices.rolling(window, center = False).mean()
+        rm_price = rm_price.shift(periods = 1)
+        # TODO: return sma on volume data
+        return rm_price
         
     def get_close_SMA_ratio(self, window):
-        rm = self.get_rolling_mean(self.data, window)
+        rm = self.get_sma(window)
         ratio = self.prices[0:] / rm[0:]
         return ratio
     
@@ -41,8 +42,8 @@ class Financials():
         
     # compute bollinger bands
     def get_bollinger_bands(self, window):
-        rolling_means = self.get_rolling_mean(self.data, window)
-        rolling_std = self.get_rolling_std(self.data, window)
+        rolling_means = self.get_sma(window)
+        rolling_std = self.get_rolling_std(window)
         upper_band = rolling_means + rolling_std * 2
         lower_band = rolling_means - rolling_std * 2
         return upper_band, lower_band
