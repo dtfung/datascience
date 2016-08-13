@@ -49,14 +49,6 @@ class Data():
         std5_to_std30 = financials.get_ratio(standard_dev_5d, standard_dev_30d)
         m5d_sma_std_ratio = financials.get_ratio(moving_avg_5d, standard_dev_5d)
         close_sma_ratio = financials.get_close_SMA_ratio(t30)
-        
-        """
-                    "Boll_upper30":bollinger_upper30,
-                    "Boll_lower30":bollinger_lower30,
-                    "sma_5_365_ratio":sma_5_365_ratio,
-                    "sma_5_30_ratio":sma_5_30_ratio,
-                    "SMA5_STD5":m5d_sma_std_ratio
-        """
         figures = {
                     "SMA_5d":moving_avg_5d,
                     "SMA_30d":moving_avg_30d,
