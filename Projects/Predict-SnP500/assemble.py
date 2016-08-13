@@ -31,11 +31,50 @@ class Data():
         
     def get_features(self, data):
         financials = features.Financials(data)
-        tf30 = settings.timeframe[1]
-        moving_avg_30d = financials.get_sma(window = tf30)
-        standard_dev_30d = financials.get_rolling_std(tf30)
+        t5 = settings.timeframe[0]
+        t30 = settings.timeframe[1]
+        t365 = settings.timeframe[2]
+        moving_avg_5d = financials.get_sma(window = t5)
+        moving_avg_30d = financials.get_sma(window = t30)
+        moving_avg_365d = financials.get_sma(window = t365)
+        standard_dev_30d = financials.get_rolling_std(t30)
+        standard_dev_5d = financials.get_rolling_std(t5)
+        standard_dev_365d = financials.get_rolling_std(t365)
+        bollinger_upper5, bollinger_lower5 = financials.get_bollinger_bands(t5) 
+        bollinger_upper30, bollinger_lower30 = financials.get_bollinger_bands(t30)
+        bollinger_upper365, bollinger_lower365 = financials.get_bollinger_bands(t365) 
         m30d_sma_std_ratio = financials.get_ratio(moving_avg_30d, standard_dev_30d)
-        figures = {"SMA_30d":moving_avg_30d, "STD_30d":standard_dev_30d, "SMA30_STD30":m30d_sma_std_ratio}
+        sma_5_365_ratio = financials.get_ratio(moving_avg_5d, moving_avg_365d)
+        sma_5_30_ratio = financials.get_ratio(moving_avg_5d, moving_avg_365d)
+        std5_to_std30 = financials.get_ratio(standard_dev_5d, standard_dev_30d)
+        m5d_sma_std_ratio = financials.get_ratio(moving_avg_5d, standard_dev_5d)
+        close_sma_ratio = financials.get_close_SMA_ratio(t30)
+        
+        """
+                    "Boll_upper30":bollinger_upper30,
+                    "Boll_lower30":bollinger_lower30,
+                    "sma_5_365_ratio":sma_5_365_ratio,
+                    "sma_5_30_ratio":sma_5_30_ratio,
+                    "SMA5_STD5":m5d_sma_std_ratio
+        """
+        figures = {
+                    "SMA_5d":moving_avg_5d,
+                    "SMA_30d":moving_avg_30d,
+                    "SMA_365d":moving_avg_365d,
+                    "STD_5d":standard_dev_5d,
+                    "STD_30d":standard_dev_30d,
+                    "STD_365d":standard_dev_365d,
+                    "Boll_upper5":bollinger_upper5,
+                    "Boll_lower5":bollinger_lower5,
+                    "Boll_upper30":bollinger_upper30,
+                    "Boll_lower30":bollinger_lower30,
+                    "Boll_upper365":bollinger_upper365,
+                    "Boll_lower365":bollinger_lower365,
+                    "SMA30_STD30":m30d_sma_std_ratio,
+                    "close_sma_ratio":close_sma_ratio,
+                    "sma_5_30_ratio":sma_5_30_ratio,
+                    "std5_to_std30":std5_to_std30
+                    }
         self.add_features(figures)
     
     def add_features(self, figures):
