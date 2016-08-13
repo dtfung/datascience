@@ -4,11 +4,11 @@ Predict future prices using historical data on the price of the S&P500 Index.  P
 
 ##Installation
 
-* Install the requirements using 'pip install -r requirements.txt'.
+* Install the requirements using `pip install -r requirements.txt`
 
 ##Usage
 
-* Run 'python predict.py'.
+* Run `python predict.py`
     * This will create a processed dataset, training and test data
     * The data will then be fitted, trained, tested and evaluated
     * The mean absolute error and R-squared metrics will be printed
@@ -18,9 +18,9 @@ Predict future prices using historical data on the price of the S&P500 Index.  P
 If you want to extend this work, here are a few places to start:
 
 * Generate more features and perform feature selection.
-    * Use the 'assembly.py' file to add them to the dataset
-    * Use the 'features.py' to perform the necessary calculations
-    * Add the name of the feature to a list called 'features' found in 'settings.py'
+    * Use the `assembly.py` file to add them to the dataset
+    * Use the `features.py` to perform the necessary calculations
+    * Add the name of the feature to a list called `features` found in `settings.py`
     * Here are some suggested features:
         1. The average volume over the last 5 days
         2. The average volume over the last 30 days
@@ -35,7 +35,7 @@ If you want to extend this work, here are a few places to start:
         11. The day of week.
         12. The day component of the date.
         13. Market news
-* Try new models in 'predict.py'
+* Try new models in `predict.py`
 * Make predictions on live data
 * Make predictions on individual stocks
 
