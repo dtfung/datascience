@@ -11,10 +11,6 @@ target = "Adjusted Close"
 volume = "Volume"
 train_set_size = .8
 test_set_size = .2
-
-"""
-"SMA_30d","STD_30d", "Boll_upper30", "Boll_lower30","SMA5_STD5"
-"""
 features = ["SMA30_STD30", "close_sma_ratio",
             "sma_5_30_ratio", "std5_to_std30",
             "SMA_5d", "SMA_30d", "SMA_365d",
