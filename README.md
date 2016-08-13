@@ -1,3 +1,11 @@
-# projects of interest
+# Projects
 
-* Predict Stock Prices 
+* Predict Stock Prices
+* Training a smart cab to drive
+* Image recogition on the CIFAR-10 dataset
+* A student intervention system
+* Predict housing prices in the Greater Boston area
+* Creating customer segments
+
+
+
