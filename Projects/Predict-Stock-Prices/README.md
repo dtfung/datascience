@@ -1,6 +1,6 @@
 ##Stock Price Prediction
 
-Predict the price of any S&P500 company.  The software is built to take in a single company, and train a linear regression model for predictions.  It is currently set to make predictions based on daily trading data retrieved from [here](https://www.quandl.com/data/YAHOO/INDEX_GSPC-S-P-500-Index).  
+Predict the price of any S&P500 company.  The software is built to take in a single company, and train a linear regression model for predictions.  It is currently set to make predictions based on daily trading data retrieved from [here](https://www.quandl.com/data/WIKI?keyword=).  
 
 ##Installation
 
