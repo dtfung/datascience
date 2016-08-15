@@ -6,6 +6,15 @@ Predict the price of any S&P500 company.  The software is built to take in a sin
 
 * Install the requirements using `pip install -r requirements.txt`
 
+##Requirements:
+
+* pandas
+* matplotlib
+* scikit-learn
+* numpy
+* ipython
+* scipy
+
 ##Usage
 
 * Run `python predict.py`
@@ -13,7 +22,7 @@ Predict the price of any S&P500 company.  The software is built to take in a sin
     * Train, test and predict on stock data
     * Prints mean absolute error on training and testing target data
 
-#Extending This
+##Extending This
 
 If you want to extend this work, here are a few places to start:
 
