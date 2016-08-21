@@ -20,6 +20,9 @@ The focus of this project is to accurately classify e-mails into folders based o
 
 1. [Bekkerman et al. (Ron Bekkerman, Andrew McCallum and Gary Huang). *Automatic Categorization of Email into Folders: Benchmark Experiments on Enron and SRI Corpora*](http://scholarworks.umass.edu/cgi/viewcontent.cgi?article=1217&context=cs_faculty_pubs)
 
+2. [Bryan Klimt and Yiming Yang. *The Enron Corpus: A New Dataset for Email Classification Research*](http://nyc.lti.cs.cmu.edu/yiming/Publications/klimt-ecml04.pdf)
+
+
 
 
 
