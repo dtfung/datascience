@@ -1,5 +1,6 @@
 # Projects
 
+* E-mail categorization using the Enron e-mails dataset
 * Predict Stock Prices
 * Training a smart cab to drive
 * Image recogition on the CIFAR-10 dataset
