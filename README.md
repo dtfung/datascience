@@ -1,7 +1,6 @@
 # Projects
 
 * Predict Arrival Times of Philadelphia's Regional Trains
-* Bosch Production Line Performance
 * E-mail categorization using the Enron e-mails dataset
 * Predict Stock Prices
 * Training a smart cab to drive
