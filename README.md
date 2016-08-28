@@ -1,5 +1,6 @@
 # Projects
 
+* Predicting Red Hat Business Value
 * Predict Arrival Times of Philadelphia's Regional Trains
 * E-mail categorization using the Enron e-mails dataset
 * Predict Stock Prices
