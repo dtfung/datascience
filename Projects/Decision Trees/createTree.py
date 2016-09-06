@@ -10,6 +10,7 @@ import assemble
 import pandas as pd
 import numpy as np
 import math
+import settings
 
 class DecisionTree():
     def __init__(self, data):
@@ -43,9 +44,7 @@ def main():
     data = prep.data
     tree = DecisionTree(data)
     information_gains = []
-    columns = ["age", "workclass", "education_num", 
-               "marital_status", "occupation", "relationship", 
-               "race", "sex", "hours_per_week", "native_country"]
+    columns = settings.columns_subset
     for col in columns:
         info_gain = tree.calc_information_gain(split_name = col, target_name = "high_income")
         information_gains.append(info_gain)
