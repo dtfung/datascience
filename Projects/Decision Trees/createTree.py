@@ -13,8 +13,7 @@ import math
 import settings
 
 class DecisionTree():
-    def __init__(self, data):
-        self.data = data
+    def __init__(self):
         self.tree = {}
         self.nodes = []
         
@@ -79,13 +78,55 @@ class DecisionTree():
         for name, split in split_dict:
             tree[name] = {}
             self.id3(split, columns, target_label, tree[name])
+            
+    def print_with_depth(self, string, depth):
+        prefix = "    " * depth
+        print("{0}{1}".format(prefix, string)) 
+    
+    def print_node(self, tree, depth):
+        if "label" in tree:
+            self.print_with_depth("Leaf: Label {0}".format(tree["label"]), depth)
+            return
+        self.print_with_depth("{0} > {1}".format(tree["column"], tree["median"]), depth)
+        branches = [tree["left"], tree["right"]]
+        for branch in branches:
+            self.print_node(branch, depth+1)
+            
+    def predict(self, tree, row):
+        if "label" in tree:
+            return tree["label"]
+        
+        column = tree["column"]
+        median = tree["median"]
+        
+        if row[column] <= median:
+            return self.predict(tree["left"], row)
+        elif row[column] > median:
+            return self.predict(tree["right"], row)
+    
+    def batch_predict(self, tree, df):
+        return df.apply(lambda x: self.predict(tree, x), axis = 1)
+            
                         
 def main():
     prep = assemble.Preprocessing()
     prep.read_file()
     prep.convert_categorical_variables()
-    dtree = DecisionTree(prep.data)
-    dtree.id3(dtree.data, settings.columns_subset, "high_income", dtree.tree)
+    dtree = DecisionTree()
+    dtree.id3(prep.data.iloc[:100], settings.columns_subset, "high_income", dtree.tree)
+    df = pd.DataFrame([dtree])
+    df.to_csv("tree.csv")
+    # dummy data
+    new_data = pd.DataFrame([
+    [40,0],
+    ])
+    # Assign column names to the data.
+    new_data.columns = ["age", "marital_status"]
+
+    
+
+    predictions = dtree.batch_predict(dtree.tree, new_data)
+    dtree.print_node(dtree.tree, 0)
     
 if __name__ == "__main__":
     main()
