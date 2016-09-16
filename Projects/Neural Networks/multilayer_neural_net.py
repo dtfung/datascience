@@ -20,28 +20,20 @@ class NeuralLayer():
             2). number of neurons in layer 
     """
     def __init__(self, inputs_per_neuron, neurons):
-        self.synaptic_weights = self.__initialise_weights(inputs_per_neuron, neurons)
+        self.synaptic_weights = self.__initialize_weights(inputs_per_neuron, neurons)
         
-    def __initialise_weights(self, inputs_per_neuron, neurons):
+    def __initialize_weights(self, inputs_per_neuron, neurons):
         """ Randomly initialize weights"""
         random.seed(1)
         synaptic_weights = 2 * random.random((inputs_per_neuron, neurons)) - 1
         return synaptic_weights
 
 class NeuralNetwork():
-    """A single neuron neural network"""
+    """A Multi-Layer Neural Network"""
     
-    def __init__(self, number_of_layers):
-        pass
-        
-    def initialize_layer(self):
-        """Create a layer with random weights"""
-        pass
-
-    def __calc_weighted_sum(self, training_input):
-        """Calculate the dot product"""
-        x = dot(training_input, self.synaptic_weights)
-        return x
+    def __init__(self, layer1, layer2):
+        self.layer1 = layer1
+        self.layer2 = layer2
         
     def __sigmoid_function(self, x):
         """
@@ -54,12 +46,11 @@ class NeuralNetwork():
         
     def predict_output(self, training_input):
         """Predict output"""
-
-        # get weighted sum
-        x = self.__calc_weighted_sum(training_input)
         # normalize x using sigmoid function
-        output = self.__sigmoid_function(x)
-        return output
+        output1 = self.__sigmoid_function(dot(training_input, self.layer1.synaptic_weights))
+        # layer2's input is the output of layer1
+        output2 = self.__sigmoid_function(dot(output1, self.layer2.synaptic_weights))
+        return output1, output2
         
     def __sigmoid_curve_gradient(self, output):
         """Sigmoid Curve Gradient"""
@@ -69,18 +60,23 @@ class NeuralNetwork():
         """Train neural network using back propagation"""
 
         for iteration in xrange(iterations):
-            # train over n iterations
+            # get outputs.  
+            output1, output2 = self.predict_output(training_input)
+            
+            # Layer 2 error 
+            error2 = training_output - output2
+            sigmoid_curve_gradient2 = self.__sigmoid_curve_gradient(output2)
+            # change 
+            delta2 = error2 * sigmoid_curve_gradient2
+            
+            # Layer 1 error
+            error1 = dot(delta2, self.layer2.synaptic_weights.T)
+            sigmoid_curve_gradient1 = self.__sigmoid_curve_gradient(output1)
+            # change
+            delta1 = error1 * sigmoid_curve_gradient1
         
-            # Step 1: Predict output
-            output = self.predict_output(training_input)
-            
-            # Step 2: Calculate error
-            error =  training_output - output
-            
-            # Step 3: Adjust weights
-            sigmoid_curve_gradient = self.__sigmoid_curve_gradient(output)
-            adj_weights = dot(training_input.T, error * sigmoid_curve_gradient)
-            self.synaptic_weights += adj_weights
+            self.layer1.synaptic_weights += dot(training_input.T, delta1)
+            self.layer2.synaptic_weights += dot(output1.T, delta2)
         
 if __name__ == "__main__":
     """
@@ -95,7 +91,7 @@ if __name__ == "__main__":
     layer_2 = NeuralLayer(inputs_per_neuron = 4, neurons = 1)
     
     # Initialize a single neuron neural network
-    neural_network = NeuralNetwork()  
+    neural_network = NeuralNetwork(layer_1, layer_2)  
     
     # number of iterations
     iterations = 60000
@@ -104,9 +100,9 @@ if __name__ == "__main__":
     neural_network.train(training_input, training_output, iterations)
     
     # Trained synaptic weights
-    print neural_network.synaptic_weights
     
     # Predict output for test input
     test_input = array([[1, 1, 0]])
-    print neural_network.predict_output(test_input)
+    hidden_layer, output =  neural_network.predict_output(test_input)
+    print output
     
