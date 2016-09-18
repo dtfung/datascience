@@ -1,0 +1,98 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Sat Sep 17 18:09:48 2016
+
+@author: donaldfung
+"""
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+class Adaline():
+    """An Adaptive Linear Neuron (Adaline)
+    
+    Inputs:
+        Learning rate (eta)
+        Number of epochs
+        
+    Output: 
+        Binary class predictions 
+    """    
+    def __init__(self, eta, n_epochs):
+        self.eta = eta
+        self.n_epochs = n_epochs
+        # cost
+        self.cost = []
+        
+    def fit(self, X, y):
+        """Train Adaline
+        
+        1). Use linear activation function to predict outputs
+        2). A cost function introduced.  We will attempt to minimize this
+        3). Update weights using Batch Gradient Descent
+        """
+        # initialize weights to zero
+        self.weights_ = np.zeros(1 + X.shape[1])
+        
+        for i in xrange(self.n_epochs):
+            # predict output
+            output = self.predict(X)
+            
+            # calculate error
+            error = y - output
+            
+            # calculate weight change
+            update = self.eta * X.T.dot(error)
+            
+            # update weights
+            self.weights_[1:] += update
+            self.weights_[0] += self.eta * error.sum()
+            
+            # update cost
+            cost = ((error**2).sum()) / 2.0
+            self.cost.append(cost)
+        return self
+    
+    def predict(self, X):
+        # find dot product
+        z = np.dot(X, self.weights_[1:]) + self.weights_[0]
+        
+        # return 1 if dot wi * xi > 0, else return -1
+        #z = np.where(z >= 0.0, 1, -1)
+        return z
+        
+        
+def read_file():
+    df = pd.read_csv("https://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data")
+    return df
+    
+if __name__ == "__main__":
+    
+    # Read Iris data set
+    df = read_file()
+    X = df.iloc[:100, [0, 2]].values
+    y = df.iloc[:100, 4].values
+    y = np.where(y == "Iris-Versicolor", 1, -1)
+    
+    # learning rate
+    eta = .01
+    n_epochs = 12
+    # initialize Adaline
+    ada = Adaline(eta, n_epochs)
+    
+    # train Adaline using X, y
+    ada.fit(X, y)
+    
+    fig, ax = plt.subplots(nrows = 1, ncols = 2, figsize = (8,4))
+    ada1 = Adaline(eta = .01, n_epochs = 10).fit(X, y)
+    ax[0].plot(range(1, len(ada1.cost) + 1), np.log10(ada1.cost), marker = 'o')
+    ax[0].set_xlabel('Epochs')
+    ax[0].set_ylabel('log(Sum-squared-error)')
+    ax[0].set_title('Adaline - Learning Rate  0.01')
+    
+    ada2 = Adaline(eta = 0.0002, n_epochs = 10).fit(X, y)
+    ax[1].plot(range(1, len(ada2.cost) + 1), np.log10(ada2.cost), marker = 'o')
+    ax[1].set_xlabel('Epochs')
+    ax[1].set_ylabel('log(Sum-Squared-error)')
+    ax[1].set_title('Adaline - Learning Rate 0.0002')
+    plt.show()
