@@ -63,7 +63,7 @@ class NeuralNetwork():
         """ 
         self.layers = layers
         self.biases = [np.random.randn(layer, 1) for layer in layers[1:]]
-        self.weights = [np.random.rand(x, y) for x, y in zip(layers[:-1], layers[1:])]
+        self.weights = [np.random.rand(y, x) for x, y in zip(layers[:-1], layers[1:])]
         
     def fit(self, training_set, eta, batch_size, shuffle = False, epochs = 10):
         """This method is where the network training occurs.  If shuffle is set to True, the data is 
@@ -76,13 +76,33 @@ class NeuralNetwork():
 
             mini_batches = [training_set[k:k + batch_size] for k in xrange(0, len(training_set), batch_size)]
             
-            for batch in mini_batches:
-                 z = self.feedforward(batch)
+            for mini_batch in mini_batches:
+                 z = self.update_mini_batch(mini_batch)
                  
-    def feedforward(batch):
-        pass
+    def update_mini_batch(self, mini_batch):
+        for x, y in mini_batch:
+            zs, activations = self.feedforward(x, y)
+            delta_w, delta_b = self.backpropagation(zs, activations)
+                 
+    def feedforward(self, x, y):
+        zs = []
+        activation = x
+        activations = [x]
+        for weight, bias in zip(self.weights, self.biases):
+            z = np.dot(weight, activation) + bias
+            zs.append(z)
+            activation = self.sigmoid(z)
+            activations.append(activation)
+        return zs, activations
             
             
+    def sigmoid(self, z):
+        return 1/(1 + np.exp(-z))
+        
+    def backpropagation(self, zs, activations):
+        error = None
+            
+                
 
 # get training, validation and test data
 training_data, validation_data, test_data = assemble.load_data_wrapper()    
