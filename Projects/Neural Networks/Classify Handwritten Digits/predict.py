@@ -28,6 +28,7 @@ import random
 import numpy as np 
 # The assemble file reads the MNIST dataset  
 import assemble
+import WeightInit
 
 class NeuralNetwork():
     
@@ -62,10 +63,9 @@ class NeuralNetwork():
         Weights and biases are initialized randomly using a gaussian distribution
         """ 
         self.layers = layers
-        self.biases = [np.random.randn(layer, 1) for layer in layers[1:]]
-        self.weights = [np.random.randn(y, x) for x, y in zip(layers[:-1], layers[1:])]
+        self.weights, self.biases = WeightInit.InitWeightsAndBiases(layers).gaussian_dist_root()
         
-    def fit(self, training_set, test_set, eta, batch_size, shuffle = False, epochs = 10):
+    def fit(self, training_set, test_set, eta, batch_size, shuffle = False, epochs = 10, penalty = None, lmbda = None):
         """This method is where the network training occurs.  If shuffle is set to True, the data is 
         shuffled.  It's then divided in mini-batches. Then we use feedforwarding and backpropagration to 
         update the weights and biases
@@ -80,7 +80,7 @@ class NeuralNetwork():
             mini_batches = [training_set[k:k + batch_size] for k in xrange(0, len(training_set), batch_size)]
             # update each mini batch
             for mini_batch in mini_batches:
-                 self.update_mini_batch(mini_batch, eta)
+                 self.update_mini_batch(mini_batch, eta, penalty, lmbda)
                  
             if test_data:
                 print "Epoch {0}: {1} / {2}".format(
@@ -88,7 +88,8 @@ class NeuralNetwork():
             else:
                 print "Epoch {0} complete".format(i)
 
-    def update_mini_batch(self, mini_batch, eta):
+    def update_mini_batch(self, mini_batch, eta, penalty, lmbda):
+        
         changed_biases = [np.zeros(b.shape) for b in self.biases] 
         changed_weights = [np.zeros(w.shape) for w in self.weights]
         
@@ -96,11 +97,16 @@ class NeuralNetwork():
             delta_w, delta_b = self.backpropagation(x, y)
             changed_biases = [b + changed_b for b, changed_b in zip(changed_biases, delta_b)]
             changed_weights = [w + changed_w for w, changed_w in zip(changed_weights, delta_w)]
-        
+    
         # using SGD, update weights and biases
         self.biases = [bias - eta/len(mini_batch) * new_bias for bias, new_bias in zip(self.biases, changed_biases)]
-        self.weights = [weight - eta/len(mini_batch) * new_weight for weight, new_weight in zip(self.weights, changed_weights)]
-                 
+        if penalty:
+            # Handle penalties
+            p = self.regularization(penalty, lmbda, n = len(mini_batch))
+            self.weights = [(1 - eta) * p * weight - (eta/len(mini_batch)) * new_weight for weight, new_weight in zip(self.weights, changed_weights)]
+        else:
+            self.weights = [weight - eta/len(mini_batch) * new_weight for weight, new_weight in zip(self.weights, changed_weights)]
+    
     def feedforward(self, x):
         """Here we compute the weighted output activations for an element through each layer"""
         zs = []
@@ -121,6 +127,16 @@ class NeuralNetwork():
         change_z = self.sigmoid(z)
         return change_z * (1 - change_z)
         
+    def regularization(self, penalty_type, lmbda, n):
+        """L2 regularization
+        
+        If None specified, return 1        
+        """
+        if penalty_type == 'L2':
+            return lmbda/n
+        else:
+            return 1
+            
     def backpropagation(self, x, y):
         """After feedforwarding, we calculate the error in the output.
         This error is then backpropagated through all the previous layers.
@@ -156,7 +172,14 @@ class NeuralNetwork():
 training_data, validation_data, test_data = assemble.load_data_wrapper()    
 
 layers = [784, 30, 10]
-mlp = NeuralNetwork(layers).fit(training_set = training_data, test_set = test_data, eta = 3.0, batch_size = 10, shuffle = True, epochs = 10)
-#mlp = Network(layers).SGD(training_data, 30, 10, 3.0, test_data)
+mlp = NeuralNetwork(layers).fit(training_set = training_data,
+                                test_set = test_data,
+                                eta = 3.0,
+                                batch_size = 10,
+                                shuffle = True,
+                                epochs = 10,
+                                penalty = None,
+                                lmbda = None)
+
 
 
