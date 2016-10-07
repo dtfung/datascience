@@ -80,7 +80,7 @@ def preproccess_files(train, test):
     
     # reshape training and test datasets
     training_inputs = [np.reshape(x, (cols, 1)) for x in train]
-    test_data = [np.reshape(x, cols, 1) for x in test]
+    test_data = [np.reshape(x, (cols, 1)) for x in test]
     
     # now join class labels to training data
     training_data = zip(training_inputs, class_labels)
