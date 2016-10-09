@@ -14,7 +14,7 @@ import pandas as pd
 if __name__ == "__main__":
     
     # initialize company class
-    company = assemble.CompanyData(settings.company_ticker)
+    company = assemble.CompanyData()
     
     # preprocess data
     df = (pd.DataFrame()
