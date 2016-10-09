@@ -12,5 +12,7 @@ company_ticker = "INTC"
 
 """ Wiki EOD Stock Data"""
 
+# name
+wiki_dbname = "WIKI/"
 # columns used
 wiki_columns = ["Volume", "Adj. Close"]
