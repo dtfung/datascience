@@ -7,3 +7,10 @@ Created on Fri Aug 12 11:05:55 2016
 Contributors: Deepak Mahtani, Blayne Chong, Donald Fung
 """
 
+# dummy company
+company_ticker = "INTC"
+
+""" Wiki EOD Stock Data"""
+
+# columns used
+wiki_columns = ["Volume", "Adj. Close"]
