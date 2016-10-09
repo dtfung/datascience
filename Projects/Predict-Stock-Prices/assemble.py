@@ -12,11 +12,9 @@ import settings
 
 class CompanyData():
     
-    def __init__(self, company_name):
+    def __init__(self):
         """Assign attributes here"""
-        self.company_name = company_name
-        self.wiki_dbname = 'WIKI/'
-        
+
         # get quandl key
         quandl.ApiConfig.api_key = quandlManager.key
     
@@ -29,7 +27,7 @@ class CompanyData():
         ================
         Date(Index), Volume, Adj. Close, 
         """
-        data = quandl.get(self.wiki_dbname + settings.company_ticker)
+        data = quandl.get(settings.wiki_dbname + settings.company_ticker)
         # filter columns
         df = data[settings.wiki_columns]
         return df
