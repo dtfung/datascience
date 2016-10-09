@@ -30,5 +30,6 @@ class CompanyData():
         Date(Index), Volume, Adj. Close, 
         """
         data = quandl.get(self.wiki_dbname + settings.company_ticker)
+        # filter columns
         df = data[settings.wiki_columns]
-        return data
+        return df
