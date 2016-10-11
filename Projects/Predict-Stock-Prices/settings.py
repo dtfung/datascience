@@ -16,3 +16,6 @@ company_ticker = "INTC"
 wiki_dbname = "WIKI/"
 # columns used
 wiki_columns = ["Volume", "Adj. Close"]
+
+start_date = "2005-01-01"
+end_date = "2016-01-01"
