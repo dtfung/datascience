@@ -33,3 +33,37 @@ class CompanyData():
         # filter columns
         df = data[settings.wiki_columns]
         return df
+        
+    def get_fundamentals(self):
+        """Returns a dataframe containing stock fundamentals.
+        
+        Check settings.py for the full list         
+        """
+        # get data
+        data = quandl.get(settings.sf1_codes,
+                          start_date = settings.start_date,
+                          end_date = settings.end_date)
+        return data
+    
+    def rename_columns(self, df):
+        """Rename columns.  Quandl returns some default column names, but
+        we replace these with custom ones found in settings.py"""
+        df = df.copy()
+        # get columns
+        cols = df.columns
+        new_columns = {}
+        # pair old column names with new ones
+        for i, col in enumerate(cols):
+            new_columns[col] = settings.sf1_columns[i]
+        # rename columns
+        df.rename(columns = new_columns, inplace = True)
+        return df
+        
+    def cal_pe_ratio(self, df):
+        """Calculate the price to earnings ratio
+        
+        Formula: current price/last reported eps figure
+        """
+        #TODO: apply formula
+        pass
+        
