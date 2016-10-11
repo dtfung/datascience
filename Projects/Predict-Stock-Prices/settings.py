@@ -26,6 +26,8 @@ end_date = "2016-01-01"
 #=========================================
 """ Core US Fundamentals Data"""
 
+# columns
+sf1_columns = "Net
 
 # Endpoints
 sf1_codes = [
@@ -47,8 +49,8 @@ sf1_codes = [
     # operating income (as reported - quarterly)
     "SF1/{}_OPINC_ARQ".format(company_ticker),
 
-    # net income (as reported - quarterly)
-    "SF1/{}_NETINCCMN_ARQ".format(company_ticker),
+    # revenue (as reported - quarterly)
+    "SF1/{}_REVENUE_ARQ".format(company_ticker),
 
     # basic earnings per share (as reported - quarterly)
     "SF1/{}_EPS_ARQ".format(company_ticker),
