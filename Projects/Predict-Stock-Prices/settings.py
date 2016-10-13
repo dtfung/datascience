@@ -27,8 +27,15 @@ end_date = "2016-01-01"
 """ Core US Fundamentals Data"""
 
 # columns
-sf1_columns = "Net
-
+sf1_columns = ["Net Income", "Cost of Goods Sold", "Gross Profit",
+               "R&D", "Operating Expenses", "Operating Income",
+               "Revenue", "EPS", "DPS", "Shares Outstanding", 
+               "Cash", "Current Assets", "Intangibles", 
+               "Total Assets", "Current Liabilities", 
+               "Long Term Debt", "Retained Earnings", 
+               "Total Liabilities", "Long Term Liabilities",
+               "Stockholders Equity", "Operating Cash Flow"]
+               
 # Endpoints
 sf1_codes = [
     # net income (as reported - quarterly)
@@ -90,4 +97,7 @@ sf1_codes = [
 
     # stockholders equity (as reported - quarterly)
     "SF1/{}_EQUITYUSD_ARQ".format(company_ticker),
+
+    # operating cash flow (as reported - quarterly)
+    "SF1/{}_NCFO_ARQ".format(company_ticker)
     ]
