@@ -59,11 +59,45 @@ class CompanyData():
         df.rename(columns = new_columns, inplace = True)
         return df
         
-    def cal_pe_ratio(self, df):
+    def remove_rows(self, df, date):
+        """Remove rows prior to a specified date"""
+        df = df.copy()
+        return df[df.index >= date]
+                
+    def calc_pe_ratio(self, df):
         """Calculate the price to earnings ratio
         
         Formula: current price/last reported eps figure
         """
-        #TODO: apply formula
-        pass
+        df = df.copy()
+        df["PE Ratio"] = df["Adj. Close"] / df["EPS"]
+        return df
+        
+    def calc_book_value_pershare(self, df):
+        """Calculate book value per share
+        
+        Formula: (Total assets - (Goodwill & Intangibles + Total Liabilities))/Shares Outstanding       
+        """
+        df = df.copy()
+        df["Book Value/Share"] = (df["Total Assets"] - (df["Intangibles"] + df["Total Liabilities"]))/df["Shares Outstanding"]
+        return df
+    
+    def calc_pb_ratio(self, df):
+        """ Calculate the price to book value ratio.
+        
+        Formula: price/book value per share
+        """
+        df = df.copy()
+        df["PB Ratio"] = df["Adj. Close"] / df["Book Value"]
+        return df
+        
+    def calc_ps_ratio(self, df):
+        """Calculate price to sales ratio
+        
+        Formula: price/revenue"""
+        df = df.copy()
+        df["PS Ratio"] = df["Adj. Close"] / df["Revenue"]
+        return df
+             
+        
         
