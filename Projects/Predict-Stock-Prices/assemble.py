@@ -88,7 +88,7 @@ class CompanyData():
         Formula: price/book value per share
         """
         df = df.copy()
-        df["PB Ratio"] = df["Adj. Close"] / df["Book Value"]
+        df["PB Ratio"] = df["Adj. Close"] / df["Book Value/Share"]
         return df
         
     def calc_ps_ratio(self, df):
@@ -96,7 +96,16 @@ class CompanyData():
         
         Formula: price/revenue"""
         df = df.copy()
-        df["PS Ratio"] = df["Adj. Close"] / df["Revenue"]
+        df["PS Ratio"] = df["Adj. Close"] / (df["Revenue"]/df["Shares Outstanding"])
+        return df
+        
+    def calc_pcashflow_ratio(self, df):
+        """Calculate price to cash flow ratio
+        
+        Formula: price/cash flow per share"""
+        df = df.copy()
+        cash_flow_per_share = df["Operating Cash Flow"] / df["Shares Outstanding"]
+        df["PCF Ratio"] = df["Adj. Close"] / cash_flow_per_share
         return df
              
         
