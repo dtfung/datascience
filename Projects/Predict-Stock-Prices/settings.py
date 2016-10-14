@@ -7,8 +7,13 @@ Created on Fri Aug 12 11:05:55 2016
 Contributors: Deepak Mahtani, Blayne Chong, Donald Fung
 """
 
+import numpy as np
+
 # dummy company
 company_ticker = "INTC"
+
+# time frame
+time_frame = np.arange(10, 30, 1)
 
 #=========================================
 """ Wiki EOD Stock Data"""
@@ -100,4 +105,5 @@ sf1_codes = [
 
     # operating cash flow (as reported - quarterly)
     "SF1/{}_NCFO_ARQ".format(company_ticker)
+    
     ]
