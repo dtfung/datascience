@@ -9,11 +9,14 @@ Contributors: Deepak Mahtani, Blayne Chong, Donald Fung
 
 import assemble
 import settings
+import model
 import pandas as pd
+import os
+import numpy as np
 
 def preprocess_data():
     
-        # initialize company class
+    # initialize company class
     company = assemble.CompanyData()
     
     # get price data
@@ -37,57 +40,19 @@ def preprocess_data():
                 .pipe(company.calc_pb_ratio)
                 .pipe(company.calc_ps_ratio)
                 .pipe(company.calc_pcashflow_ratio))
+    
+    # save
+    df.to_csv("processed_data/df.csv", index = False)
     return df
     
-def partition(df):
-    # get size of train and test sets
-    train_size = int(df.shape[0] * 0.8)
-    test_size = int(df.shape[0] * 0.1)
-    
-    train = df.iloc[:train_size]
-    validation = df.iloc[train_size:train_size + test_size]
-    test = df.iloc[-test_size:]
-
-    # target label valus
-    y_train = train.loc[:, ("Adj. Close")]
-    y_val = validation.loc[:, ("Adj. Close")]
-    y_test = test.loc[:, ("Adj. Close")]
-                      
-    # feature data
-    X_train = train.drop("Adj. Close", axis = 1)
-    X_val = validation.drop("Adj. Close", axis = 1)
-    X_test = test.drop("Adj. Close", axis = 1)
-    return X_train, y_train, X_val, y_val, X_test, y_test
-    
-def feature_scale(X_train, X_val, X_test):
-    "Normalize all columns"""
-    from sklearn.preprocessing import MinMaxScaler
-    mms = MinMaxScaler()
-    
-    X_train_std = mms.fit_transform(X_train)
-    X_val_std = mms.fit_transform(X_val)
-    X_test_std = mms.fit_transform(X_test)
-    return X_train_std, X_val_std, X_test_std
-    
-    
-def predict(df):
-    
-    # partition data
-    X_train, y_train, X_val, y_val, X_test, y_test = partition(df)
-    
-    # normalize features
-    X_train_std, X_val_std, X_test_std = feature_scale(X_train, X_val, X_test)
-     
-    
-    # get time frame
-    time_frame = settings.time_frame
-    print time_frame
-    
-
 if __name__ == "__main__":
     
-    df = preprocess_data()
-    predict(df)
+    # if data exists, load it
+    if os.path.isfile("processed_data/df.csv"):
+        df = pd.read_csv("processed_data/df.csv", index_col=0)
+        df.index = pd.to_datetime(df.index)
+    else:
+        df = preprocess_data()
 
 
     
