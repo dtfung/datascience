@@ -53,6 +53,12 @@ if __name__ == "__main__":
         df.index = pd.to_datetime(df.index)
     else:
         df = preprocess_data()
+        
+    rl = model.Qlearning(alpha = settings.alpha, 
+                         gamma = settings.gamma,
+                         epsilon = settings.epsilon,
+                         data = df).get_state()
+    
 
 
     
