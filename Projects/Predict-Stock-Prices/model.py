@@ -50,11 +50,33 @@ class Qlearning():
             reward = .1
             
             # TODO: update Q table
+            self.updateQ(last_state = self.last_state,
+                         last_action = self.last_action,
+                         last_reward = self.last_reward,
+                         current_state = state)
             
+        # save state, action and reward
         self.last_reward = reward
         self.last_action = action
         self.last_state = state
         
+        # increment time step
+        self.timestep += 1
+        
+    def updateQ(self, last_state, last_action, last_reward, current_state):
+        
+        # get max Q for current state and action
+        maxQ = max([self.getQ(current_state, action) for action in self.actions]) 
+        
+        # get Q for last state and action
+        last_Q = self.getQ(last_state, last_action)
+        
+        # update Q for last state and action
+        self.qtable[(last_state, last_action)] = ((1 - self.alpha) * last_Q) + self.alpha * (last_reward + (self.gamma * maxQ))
+        
+    def getQ(self, state, action):
+        return self.qtable.get((state, action), 0.0)
+         
 class Model():
     
     def partition(self, df):
