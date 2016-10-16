@@ -76,6 +76,23 @@ class Qlearning():
         
     def getQ(self, state, action):
         return self.qtable.get((state, action), 0.0)
+        
+    def select_action(self, state):
+        
+        q = [self.getQ(state, a) for a in self.actions]
+        maxQ = max(q)
+        
+        if random.random() < self.epsilon:
+            action = random.choice(self.actions)
+        else:
+            count = q.count(maxQ)
+            if count > 1:
+                best = [i for i in range(len(self.actions)) if q[i] == maxQ]
+                i = random.choice(best)
+            else:
+                i = q.index(maxQ)
+            action = self.actions[i]
+        return action
          
 class Model():
     
