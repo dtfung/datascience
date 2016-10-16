@@ -7,7 +7,7 @@ Created on Sun Oct 16 11:26:20 2016
 """
 
 import random 
-import numpy as np
+from environment import Environment
 
 class Qlearning():
     
@@ -29,43 +29,17 @@ class Qlearning():
     def get_state(self):
         """Get new state"""
         
-        df = self.discretize(self.data)
+        env = Environment()
+        df = env.discretize(self.data)
         
         for i in xrange(df.shape[0]):
             # get ith row
-            row = self.data.iloc[i]
+            row = df.iloc[i]
             # compile state
-            state = (self.trade_open, 
-                     self.cum_return, 
-                     row["PE Ratio"],
-                     row["PB Ratio"],
-                     row["PS Ratio"])
+            state = env.get_state(row, self.trade_open, self.cum_return)
             
             self.update(state)
 
-    def discretize(self, data):
-        """Group continuous values into bins"""
-
-        df = data.copy() 
-        cols = df.columns
-        for col in cols:
-            x = df[col]
-            min_val = min(x)
-            max_val = max(x)
-            
-            # get length of number
-            num_length = len(str(abs(min_val)).split(".")[0])
-            # calculate step size
-            step = 1 * 10**(num_length - 1)
-            bins = np.arange(min_val, max_val, step = step)
-            digitize = np.digitize(x, bins)
-            df[col] = digitize
-        return df
-                  
-        #steps =           
-        #stepsize = self.data.shape[0]/
-                  
-    
     def update(self, state):
         
         if self.timestep == 0:
@@ -121,6 +95,7 @@ class Qlearning():
                 i = q.index(maxQ)
             action = self.actions[i]
         return action
+        
         
 
     # TODO: calculate reward
