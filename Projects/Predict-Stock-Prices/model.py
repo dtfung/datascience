@@ -5,6 +5,56 @@ Created on Sun Oct  9 11:06:27 2016
 @author: donaldfung
 """
 
+import random 
+
+class Qlearning():
+    
+    def __init__(self, alpha, gamma, epsilon, data):
+        """Declare attributes here"""
+        self.alpha = alpha
+        self.gamma = gamma
+        self.epsilon = epsilon
+        self.data = data
+        self.trade_open = False
+        self.cum_return = 0
+        self.timestep = 0
+        self.actions = ["buy", "sell", "hold"]
+        self.last_state = None
+        self.last_action = None
+        self.last_reward = None
+        self.qtable = {}
+        
+    def get_state(self):
+        """Get new state"""
+        for i in xrange(self.data.shape[0]):
+            # get ith row
+            row = self.data.iloc[i]
+            # compile state
+            state = (self.trade_open, 
+                     self.cum_return, 
+                     row["PE Ratio"],
+                     row["PB Ratio"],
+                     row["PS Ratio"])
+            
+            self.update(state)
+    
+    def update(self, state):
+        
+        if self.timestep == 0:
+            # randomize action
+            action = random.choice(self.actions)
+            reward = .1
+        else:
+            action = random.choice(self.actions)
+        
+            reward = .1
+            
+            # TODO: update Q table
+            
+        self.last_reward = reward
+        self.last_action = action
+        self.last_state = state
+        
 class Model():
     
     def partition(self, df):
@@ -72,8 +122,7 @@ class Model():
         print test_error
         
     def plot(self, predictions, y_true):
-           
-        # plot
+
         import matplotlib.pyplot as plt
         fig, ax = plt.subplots()
         ax.plot(range(0, len(predictions)), predictions, label = "Predictions", color = 'green')
