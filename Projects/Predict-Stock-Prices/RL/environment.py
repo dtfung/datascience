@@ -15,8 +15,7 @@ class Environment():
 
     def get_state(self, row, trade_open, cum_return):
         """Get new state"""
-        state = (trade_open, 
-                 cum_return, 
+        state = (
                  row["PE Ratio"],
                  row["PB Ratio"],
                  row["PS Ratio"])
@@ -44,26 +43,25 @@ class Environment():
     def calc_daily_return(self, price_data, timestep, action):
         """The % daily return based on an action"""
 
-        while price_data.iloc[timestep + 1]:
-            # get price
-            current_price = price_data.iloc[timestep]
-            next_day_price = price_data.iloc[timestep + 1]
+        # get price
+        current_price = price_data.iloc[timestep]
+        next_day_price = price_data.iloc[timestep + 1]
 
-            diff = next_day_price - current_price
-            daily_return = diff/current_price
-            
-            if action == "buy":
-                if daily_return < 0.0:
-                    return daily_return
-                else:
-                    return abs(daily_return)  
-            elif action == "sell":
-                if daily_return < 0.0:
-                    return abs(daily_return)
-                else:
-                    return - daily_return      
+        diff = next_day_price - current_price
+        daily_return = diff/current_price
+        
+        if action == "buy":
+            if daily_return < 0.0:
+                return daily_return
             else:
-                return 0.0
+                return abs(daily_return)  
+        elif action == "sell":
+            if daily_return < 0.0:
+                return abs(daily_return)
+            else:
+                return - daily_return      
+        else:
+            return 0.0
             
 
             
