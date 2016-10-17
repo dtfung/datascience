@@ -7,6 +7,8 @@ Created on Sun Oct 16 11:26:20 2016
 """
 
 import random 
+import sys
+sys.path.insert(0, 'RL/')
 from environment import Environment
 
 class Qlearning():
@@ -19,43 +21,61 @@ class Qlearning():
         self.data = data
         self.trade_open = False
         self.cum_return = 0
+        self.penalty = []
         self.timestep = 0
         self.actions = ["buy", "sell", "hold"]
         self.last_state = None
         self.last_action = None
         self.last_reward = None
         self.qtable = {}
+        self.env = None
+        
+    def reset(self):
+        self.timestep = 0
+        self.penalty = []
         
     def get_state(self):
         """Get new state"""
         
-        env = Environment()
-        df = env.discretize(self.data)
+        self.env = Environment()
+        df = self.env.discretize(self.data)
         
-        for i in xrange(df.shape[0]):
-            # get ith row
-            row = df.iloc[i]
-            # compile state
-            state = env.get_state(row, self.trade_open, self.cum_return)
+        
+        penalties = []
+        for i in xrange(0, 100):
+            for i in xrange(df.shape[0] - 1):
+                # get ith row
+                row = df.iloc[i]
+                # compile state
+                state = self.env.get_state(row, self.trade_open, self.cum_return)
+                
+                self.update(state)
             
-            self.update(state)
+            penalties.append(sum(self.penalty))
+            # reset variables
+            self.reset()
 
     def update(self, state):
         
         if self.timestep == 0:
             # randomize action
             action = random.choice(self.actions)
-            reward = .1
+            reward = self.env.calc_daily_return(self.data["Adj. Close"], self.timestep, action)
         else:
             action = random.choice(self.actions)
         
-            reward = .1
+            reward = self.env.calc_daily_return(self.data["Adj. Close"], self.timestep, action)
             
             # TODO: update Q table
             self.updateQ(last_state = self.last_state,
                          last_action = self.last_action,
                          last_reward = self.last_reward,
                          current_state = state)
+            
+            if reward < 0:
+                self.penalty.append(-1)
+            else:
+                self.penalty.append(1)
             
         # save state, action and reward
         self.last_reward = reward
@@ -95,7 +115,3 @@ class Qlearning():
                 i = q.index(maxQ)
             action = self.actions[i]
         return action
-        
-        
-
-    # TODO: calculate reward
