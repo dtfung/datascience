@@ -12,13 +12,6 @@ import pickle
 sys.path.insert(0, 'RL/')
 from environment import Environment
 
-def load():
-    qtable = pickle.load(open("qtable", "rb"))
-    return qtable
-    
-def save(qtable):
-    pickle.dump(qtable, open("qtable", "wb"))
-
 class Qlearning():
     
     def __init__(self, alpha, gamma, epsilon, data):
@@ -39,6 +32,7 @@ class Qlearning():
         self.last_reward = None
         self.qtable = {}
         self.env = None
+        self.helpers = Helpers()
         
     def reset(self):
         self.timestep = 0
@@ -48,7 +42,6 @@ class Qlearning():
 
         if self.epsilon > 0.05:
             self.epsilon -= .001
-        print self.epsilon
         
     def get_state(self):
         """Get new state"""
@@ -78,7 +71,7 @@ class Qlearning():
             print "loss sum is", sum(self.loss)
             # reset variables
             self.reset()
-            save(self.qtable)
+            self.helpers.save(self.qtable)
             
 
     def update(self, state):
@@ -143,3 +136,21 @@ class Qlearning():
 
             action = self.actions[i]
         return action
+        
+class Helpers():
+    
+    def partition(self, df):
+        # get size of train and test sets
+        train_size = int(df.shape[0] * 0.9)
+        test_size = int(df.shape[0] * 0.1)
+        
+        train = df.iloc[:train_size]
+        test = df.iloc[-test_size:]
+        return train, test
+    
+    def load(self):
+        qtable = pickle.load(open("qtable", "rb"))
+        return qtable
+        
+    def save(self, qtable):
+        pickle.dump(qtable, open("qtable", "wb"))
