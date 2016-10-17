@@ -6,7 +6,8 @@ Created on Sun Oct 16 11:26:20 2016
 @author: donaldfung
 """
 
-import random 
+import random
+import settings 
 import sys
 import pickle
 sys.path.insert(0, 'RL/')
@@ -14,7 +15,7 @@ from environment import Environment
 
 class Qlearning():
     
-    def __init__(self, alpha, gamma, epsilon, data):
+    def __init__(self, alpha, gamma, epsilon, data, is_train, qtable):
         """Declare attributes here"""
         self.alpha = alpha
         self.gamma = gamma
@@ -30,9 +31,10 @@ class Qlearning():
         self.last_state = None
         self.last_action = None
         self.last_reward = None
-        self.qtable = {}
+        self.qtable = qtable
         self.env = None
         self.helpers = Helpers()
+        self.is_train = is_train
         
     def reset(self):
         self.timestep = 0
@@ -53,7 +55,14 @@ class Qlearning():
         wins = []
         holds = []
 
-        for i in xrange(0, 10000):
+        # get epochs
+        if self.is_train:
+            
+            epochs = settings.epochs
+        else:
+            epochs = 1
+            
+        for i in xrange(0, epochs):
             for i in xrange(df.shape[0] - 1):
                 # get ith row
                 row = df.iloc[i]
@@ -71,7 +80,9 @@ class Qlearning():
             print "loss sum is", sum(self.loss)
             # reset variables
             self.reset()
-            self.helpers.save(self.qtable)
+            
+            if self.is_train:
+                self.helpers.save(self.qtable)
             
 
     def update(self, state):
@@ -149,8 +160,10 @@ class Helpers():
         return train, test
     
     def load(self):
-        qtable = pickle.load(open("qtable", "rb"))
+        qtable = pickle.load(open("RL/memory/qtable.pkl", "rb"))
         return qtable
         
     def save(self, qtable):
-        pickle.dump(qtable, open("qtable", "wb"))
+        out = open("RL/memory/qtable.pkl", "wb")
+        pickle.dump(qtable, out)
+        out.close()
