@@ -8,8 +8,16 @@ Created on Sun Oct 16 11:26:20 2016
 
 import random 
 import sys
+import pickle
 sys.path.insert(0, 'RL/')
 from environment import Environment
+
+def load():
+    qtable = pickle.load(open("qtable", "rb"))
+    return qtable
+    
+def save(qtable):
+    pickle.dump(qtable, open("qtable", "wb"))
 
 class Qlearning():
     
@@ -21,7 +29,9 @@ class Qlearning():
         self.data = data
         self.trade_open = False
         self.cum_return = 0
-        self.penalty = []
+        self.loss = []
+        self.win = []
+        self.hold = []
         self.timestep = 0
         self.actions = ["buy", "sell", "hold"]
         self.last_state = None
@@ -32,17 +42,25 @@ class Qlearning():
         
     def reset(self):
         self.timestep = 0
-        self.penalty = []
+        self.loss = []
+        self.win = []
+        self.hold = []
+
+        if self.epsilon > 0.05:
+            self.epsilon -= .001
+        print self.epsilon
         
     def get_state(self):
         """Get new state"""
         
         self.env = Environment()
-        df = self.env.discretize(self.data)
-        
-        
-        penalties = []
-        for i in xrange(0, 100):
+        #df = self.env.discretize(self.data)
+        df = self.data.copy()
+        losses = []
+        wins = []
+        holds = []
+
+        for i in xrange(0, 10000):
             for i in xrange(df.shape[0] - 1):
                 # get ith row
                 row = df.iloc[i]
@@ -51,18 +69,26 @@ class Qlearning():
                 
                 self.update(state)
             
-            penalties.append(sum(self.penalty))
+            losses.append(sum(self.loss))
+            wins.append(sum(self.win))
+            holds.append(sum(self.hold))
+            
+            print sum(self.win)
+            print "holding sum is", sum(self.hold)
+            print "loss sum is", sum(self.loss)
             # reset variables
             self.reset()
+            save(self.qtable)
+            
 
     def update(self, state):
         
         if self.timestep == 0:
             # randomize action
             action = random.choice(self.actions)
-            reward = self.env.calc_daily_return(self.data["Adj. Close"], self.timestep, action)
+            reward = 0
         else:
-            action = random.choice(self.actions)
+            action = self.select_action(state)
         
             reward = self.env.calc_daily_return(self.data["Adj. Close"], self.timestep, action)
             
@@ -73,10 +99,12 @@ class Qlearning():
                          current_state = state)
             
             if reward < 0:
-                self.penalty.append(-1)
-            else:
-                self.penalty.append(1)
-            
+                self.loss.append(1)
+            elif reward > 0:
+                self.win.append(1)
+            elif reward == 0:
+                self.hold.append(1)
+                
         # save state, action and reward
         self.last_reward = reward
         self.last_action = action
@@ -94,7 +122,7 @@ class Qlearning():
         last_Q = self.getQ(last_state, last_action)
         
         # update Q for last state and action
-        self.qtable[(last_state, last_action)] = ((1 - self.alpha) * last_Q) + self.alpha * (last_reward + (self.gamma * maxQ))
+        self.qtable[(last_state, last_action)] = last_Q + self.alpha * (last_reward + (self.gamma * maxQ) - last_Q)
         
     def getQ(self, state, action):
         return self.qtable.get((state, action), 0.0)
@@ -103,7 +131,6 @@ class Qlearning():
         
         q = [self.getQ(state, a) for a in self.actions]
         maxQ = max(q)
-        
         if random.random() < self.epsilon:
             action = random.choice(self.actions)
         else:
@@ -113,5 +140,6 @@ class Qlearning():
                 i = random.choice(best)
             else:
                 i = q.index(maxQ)
+
             action = self.actions[i]
         return action
