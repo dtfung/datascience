@@ -16,7 +16,7 @@ from account import OpenPosition
 
 class Qlearning():
     
-    def __init__(self, alpha, gamma, epsilon, data, is_train, qtable):
+    def __init__(self, alpha, gamma, epsilon, data, is_train, qtable, dynaQ_online):
         """Declare attributes here"""
         # hyperparameters
         self.alpha = alpha
@@ -41,6 +41,8 @@ class Qlearning():
         self.env = Environment()
         self.open_positions = OpenPosition()
         self.helpers = Helpers()
+        # dyna
+        self.dynaQ_online = dynaQ_online
            
     def reset(self):
         """Reset a few variables"""
@@ -67,11 +69,14 @@ class Qlearning():
         holds = []
 
         # get epochs
-        if self.is_train:
-            epochs = settings.epochs
-        else:
-            # epoch size if test set is used
+        if self.dynaQ_online == True:
             epochs = 1
+        else:
+            if self.is_train:
+                epochs = settings.epochs
+            else:
+                # epoch size if test set is used
+                epochs = 1
         for i in xrange(0, epochs):
             for i in xrange(df.shape[0] - 1):
                 # get ith row
@@ -91,6 +96,7 @@ class Qlearning():
             print "total losses", sum(self.loss)
             # reset variables
             self.reset()
+            print len(self.qtable)
             
             if self.is_train:
                 self.helpers.save(self.qtable)
@@ -109,6 +115,8 @@ class Qlearning():
         else:
             action = self.select_action(state)
             self.actions, reward = self.open_positions.calc_return(self.data["Adj. Close"], self.timestep, action, self.actions)
+            
+            reward = self.open_positions.calc_daily_return(self.data["Adj. Close"], self.timestep, action)
             
             # TODO: update Q table
             self.updateQ(last_state = self.last_state,
@@ -174,12 +182,13 @@ class Helpers():
         return train, test
     
     def load(self):
-        qtable = pickle.load(open("RL/memory/qtable.pkl", "rb"))
+        qtable = pickle.load(open("RL/memory/qtable_cum_returns.pkl", "rb"))
         return qtable
         
     def save(self, qtable):
-        out = open("RL/memory/qtable4.pkl", "wb")
+        out = open("RL/memory/qtable_cum_returns.pkl", "wb")
         pickle.dump(qtable, out)
         out.close()
+
         
     
