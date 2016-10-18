@@ -16,8 +16,10 @@ class Environment():
     def get_state(self, row, trade_open, cum_return):
         """Get new state"""
         state = (
+                 trade_open,
                  row["PE Ratio"],
                  row["PB Ratio"],
+                 row["PCF Ratio"],
                  row["PS Ratio"])
         return state
 
@@ -34,34 +36,24 @@ class Environment():
             # get length of number
             num_length = len(str(abs(min_val)).split(".")[0])
             # calculate step size
-            step = 1 * 10**(num_length - 1)
+            if num_length == 1:
+                step = 1
+            if num_length == 2:
+                step = 2
+            if num_length == 3:
+                step = 5
+            elif num_length > 3:
+                step = 1 * 10**(num_length - 1)
             bins = np.arange(min_val, max_val, step = step)
             digitize = np.digitize(x, bins)
             df[col] = digitize
         return df
         
-    def calc_daily_return(self, price_data, timestep, action):
-        """The % daily return based on an action"""
-
-        # get price
-        current_price = price_data.iloc[timestep]
-        next_day_price = price_data.iloc[timestep + 1]
-
-        diff = next_day_price - current_price
-        daily_return = diff/current_price
+    
+                
+            
+            
         
-        if action == "buy":
-            if daily_return < 0.0:
-                return daily_return
-            else:
-                return abs(daily_return)  
-        elif action == "sell":
-            if daily_return < 0.0:
-                return abs(daily_return)
-            else:
-                return - daily_return      
-        else:
-            return 0.0
             
 
             
