@@ -17,6 +17,7 @@ class Environment():
         """Get new state"""
         state = (
                  trade_open,
+                 cum_return,
                  row["PE Ratio"],
                  row["PB Ratio"],
                  row["PCF Ratio"],
