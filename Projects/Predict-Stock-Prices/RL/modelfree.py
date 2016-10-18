@@ -49,6 +49,10 @@ class Qlearning():
         self.win = []
         self.hold = []
         self.epsilon = settings.epsilon
+        self.open_positions.direction = None
+        self.open_positions.trade_open = False
+        self.open_positions.open_price = 0.0
+        self.open_profit = 0.0
 
     def reduce_exploration(self):
         """gradually reduce exploration rate over time"""
@@ -73,7 +77,7 @@ class Qlearning():
                 # get ith row
                 row = df.iloc[i]
                 # compile state
-                state = self.env.get_state(row, self.open_positions.trade_open, self.open_positions.cumulative_return)
+                state = self.env.get_state(row, self.open_positions.trade_open, self.open_positions.open_profit)
                 self.update(state)
                 # reduce exploration rate
                 self.reduce_exploration()
@@ -96,16 +100,15 @@ class Qlearning():
         if self.timestep == 0:
             # randomize action
             action = random.choice(self.actions)
-            reward = 0
-            
             # handle open positions
-            self.actions = self.open_positions.handle_open_position(action, self.actions)
-
+            self.actions = self.open_positions.manage_open_position(self.data["Adj. Close"], 
+                                                                    action, 
+                                                                    self.actions, 
+                                                                    self.timestep)
+            reward = 0
         else:
             action = self.select_action(state)
-            reward = self.open_positions.calc_daily_return(self.data["Adj. Close"], self.timestep, action)
-            # handle open positions
-            self.actions = self.open_positions.handle_open_position(action, self.actions)
+            self.actions, reward = self.open_positions.calc_return(self.data["Adj. Close"], self.timestep, action, self.actions)
             
             # TODO: update Q table
             self.updateQ(last_state = self.last_state,
@@ -175,7 +178,7 @@ class Helpers():
         return qtable
         
     def save(self, qtable):
-        out = open("RL/memory/qtable3.pkl", "wb")
+        out = open("RL/memory/qtable4.pkl", "wb")
         pickle.dump(qtable, out)
         out.close()
         
