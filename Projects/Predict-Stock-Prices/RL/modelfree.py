@@ -41,14 +41,17 @@ class Qlearning():
         self.env = Environment()
         self.open_positions = OpenPosition()
         self.helpers = Helpers()
-        
-        
+           
     def reset(self):
+        """Reset a few variables"""
         self.timestep = 0
         self.loss = []
         self.win = []
         self.hold = []
+        self.epsilon = settings.epsilon
 
+    def reduce_exploration(self):
+        """gradually reduce exploration rate over time"""
         if self.epsilon > 0.05:
             self.epsilon -= .001
         
@@ -63,6 +66,7 @@ class Qlearning():
         if self.is_train:
             epochs = settings.epochs
         else:
+            # epoch size if test set is used
             epochs = 1
         for i in xrange(0, epochs):
             for i in xrange(df.shape[0] - 1):
@@ -70,23 +74,23 @@ class Qlearning():
                 row = df.iloc[i]
                 # compile state
                 state = self.env.get_state(row, self.open_positions.trade_open, self.open_positions.cumulative_return)
-                
                 self.update(state)
+                # reduce exploration rate
+                self.reduce_exploration()
             
             losses.append(sum(self.loss))
             wins.append(sum(self.win))
             holds.append(sum(self.hold))
             
-            print sum(self.win)
-            print "holding sum is", sum(self.hold)
-            print "loss sum is", sum(self.loss)
+            print "total wins:", sum(self.win)
+            print "no action sum:", sum(self.hold)
+            print "total losses", sum(self.loss)
             # reset variables
             self.reset()
             
             if self.is_train:
                 self.helpers.save(self.qtable)
             
-
     def update(self, state):
         
         if self.timestep == 0:
@@ -171,7 +175,7 @@ class Helpers():
         return qtable
         
     def save(self, qtable):
-        out = open("RL/memory/qtable2.pkl", "wb")
+        out = open("RL/memory/qtable3.pkl", "wb")
         pickle.dump(qtable, out)
         out.close()
         
