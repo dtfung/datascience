@@ -3,7 +3,7 @@
 Created on Fri Aug 12 12:05:10 2016
 
 @author: donaldfung
-
+    
 Contributors: Deepak Mahtani, Blayne Chong, Donald Fung
 """
 
@@ -12,7 +12,9 @@ import settings
 import model
 import pandas as pd
 import os
-import numpy as np
+import sys
+sys.path.insert(0, 'RL/')
+from modelfree import Qlearning, Helpers
 
 def preprocess_data():
     
@@ -54,10 +56,17 @@ if __name__ == "__main__":
     else:
         df = preprocess_data()
         
-    rl = model.Qlearning(alpha = settings.alpha, 
-                         gamma = settings.gamma,
-                         epsilon = settings.epsilon,
-                         data = df).get_state()
+    train, test = Helpers().partition(df)
+    #qtable = Helpers().load()
+    rl = Qlearning(
+                   alpha = settings.alpha, 
+                   gamma = settings.gamma,
+                   epsilon = settings.epsilon,
+                   data = train,
+                   is_train = True,
+                   qtable = {},
+                   dynaQ_online = False
+                   ).get_state()
     
 
 

@@ -18,10 +18,10 @@ time_frame = np.arange(10, 30, 1)
 #=========================================
 """Q Learning"""
 
-alpha = 0.2
-gamma = 0.1
-epsilon = 0.01
-
+alpha = 0.001
+gamma = 0.001
+epsilon = 0.5
+epochs = 100
 
 #=========================================
 """ Wiki EOD Stock Data"""
