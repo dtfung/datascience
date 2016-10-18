@@ -12,29 +12,36 @@ import sys
 import pickle
 sys.path.insert(0, 'RL/')
 from environment import Environment
+from account import OpenPosition
 
 class Qlearning():
     
     def __init__(self, alpha, gamma, epsilon, data, is_train, qtable):
         """Declare attributes here"""
+        # hyperparameters
         self.alpha = alpha
         self.gamma = gamma
         self.epsilon = epsilon
+        # data
         self.data = data
-        self.trade_open = False
-        self.cum_return = 0
+        self.is_train = is_train
+        # metrics
         self.loss = []
         self.win = []
         self.hold = []
         self.timestep = 0
+        # actions
         self.actions = ["buy", "sell", "hold"]
         self.last_state = None
         self.last_action = None
         self.last_reward = None
+        # Q-table
         self.qtable = qtable
-        self.env = None
+        # class instances
+        self.env = Environment()
+        self.open_positions = OpenPosition()
         self.helpers = Helpers()
-        self.is_train = is_train
+        
         
     def reset(self):
         self.timestep = 0
@@ -47,9 +54,6 @@ class Qlearning():
         
     def get_state(self):
         """Get new state"""
-        
-        self.env = Environment()
-        #df = self.env.discretize(self.data)
         df = self.data.copy()
         losses = []
         wins = []
@@ -57,17 +61,15 @@ class Qlearning():
 
         # get epochs
         if self.is_train:
-            
             epochs = settings.epochs
         else:
             epochs = 1
-            
         for i in xrange(0, epochs):
             for i in xrange(df.shape[0] - 1):
                 # get ith row
                 row = df.iloc[i]
                 # compile state
-                state = self.env.get_state(row, self.trade_open, self.cum_return)
+                state = self.env.get_state(row, self.open_positions.trade_open, self.open_positions.cumulative_return)
                 
                 self.update(state)
             
@@ -91,10 +93,15 @@ class Qlearning():
             # randomize action
             action = random.choice(self.actions)
             reward = 0
+            
+            # handle open positions
+            self.actions = self.open_positions.handle_open_position(action, self.actions)
+
         else:
             action = self.select_action(state)
-        
-            reward = self.env.calc_daily_return(self.data["Adj. Close"], self.timestep, action)
+            reward = self.open_positions.calc_daily_return(self.data["Adj. Close"], self.timestep, action)
+            # handle open positions
+            self.actions = self.open_positions.handle_open_position(action, self.actions)
             
             # TODO: update Q table
             self.updateQ(last_state = self.last_state,
@@ -164,6 +171,8 @@ class Helpers():
         return qtable
         
     def save(self, qtable):
-        out = open("RL/memory/qtable.pkl", "wb")
+        out = open("RL/memory/qtable2.pkl", "wb")
         pickle.dump(qtable, out)
         out.close()
+        
+    
