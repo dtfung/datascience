@@ -13,6 +13,7 @@ import pickle
 sys.path.insert(0, 'RL/')
 from environment import Environment
 from account import OpenPosition
+from dynaQ import DynaQ
 
 class Qlearning():
     
@@ -43,6 +44,8 @@ class Qlearning():
         self.helpers = Helpers()
         # dyna
         self.dynaQ_online = dynaQ_online
+        self.dyna_q = DynaQ()
+        self.last_ex_bonus = 0.0
            
     def reset(self):
         """Reset a few variables"""
@@ -55,6 +58,7 @@ class Qlearning():
         self.open_positions.trade_open = False
         self.open_positions.open_price = 0.0
         self.open_profit = 0.0
+        self.last_ex_bonus = 0.0
 
     def reduce_exploration(self):
         """gradually reduce exploration rate over time"""
@@ -70,13 +74,13 @@ class Qlearning():
 
         # get epochs
         if self.dynaQ_online == True:
-            epochs = 1
+            epochs = 10
         else:
             if self.is_train:
                 epochs = settings.epochs
             else:
                 # epoch size if test set is used
-                epochs = 1
+                epochs = 4
         for i in xrange(0, epochs):
             for i in xrange(df.shape[0] - 1):
                 # get ith row
@@ -96,29 +100,47 @@ class Qlearning():
             print "total losses", sum(self.loss)
             # reset variables
             self.reset()
-            print len(self.qtable)
-            
+            # save progress
             if self.is_train:
                 self.helpers.save(self.qtable)
             
     def update(self, state):
-        
         if self.timestep == 0:
             # randomize action
             action = random.choice(self.actions)
             # handle open positions
+            """
             self.actions = self.open_positions.manage_open_position(self.data["Adj. Close"], 
                                                                     action, 
                                                                     self.actions, 
                                                                     self.timestep)
+            """
             reward = 0
         else:
+            
+            # more dyna-Q
+            if self.dynaQ_online == True:
+                #self.last_ex_bonus = ex_bonus
+                self.explore(state)
+            q = self.qtable
+                
+            d = self.data
             action = self.select_action(state)
-            self.actions, reward = self.open_positions.calc_return(self.data["Adj. Close"], self.timestep, action, self.actions)
+            """
+            self.actions, reward = self.open_positions.calc_return(self.data["Adj. Close"], 
+                                                                   self.timestep, 
+                                                                   action, 
+                                                                   self.actions)"""
             
             reward = self.open_positions.calc_daily_return(self.data["Adj. Close"], self.timestep, action)
             
-            # TODO: update Q table
+            # apply dyna-Q
+            if self.dynaQ_online == True:
+                ex_bonus = self.dyna_q.calc_exploration_bonus(self.timestep, state, action)
+            else: 
+                ex_bonus = 0.0
+                    
+            # Update Q table
             self.updateQ(last_state = self.last_state,
                          last_action = self.last_action,
                          last_reward = self.last_reward,
@@ -131,16 +153,16 @@ class Qlearning():
             elif reward == 0:
                 self.hold.append(1)
                 
-        # save state, action and reward
+        # save state, action and reward and exploration bonus
         self.last_reward = reward
         self.last_action = action
         self.last_state = state
-        
+
         # increment time step
         self.timestep += 1
         
-    def updateQ(self, last_state, last_action, last_reward, current_state):
-        
+    def updateQ(self, last_state, last_action, last_reward, current_state, exploration_bonus = 0.0):
+        """Update function for Q-learning"""
         # get max Q for current state and action
         maxQ = max([self.getQ(current_state, action) for action in self.actions]) 
         
@@ -148,13 +170,14 @@ class Qlearning():
         last_Q = self.getQ(last_state, last_action)
         
         # update Q for last state and action
-        self.qtable[(last_state, last_action)] = last_Q + self.alpha * (last_reward + (self.gamma * maxQ) - last_Q)
+        q = last_Q + self.alpha * (last_reward + exploration_bonus + (self.gamma * maxQ) - last_Q)
+        self.qtable[(last_state, last_action)] = q
         
     def getQ(self, state, action):
         return self.qtable.get((state, action), 0.0)
         
     def select_action(self, state):
-        
+        """Select action that yields the highest Q value"""
         q = [self.getQ(state, a) for a in self.actions]
         maxQ = max(q)
         if random.random() < self.epsilon:
@@ -170,6 +193,33 @@ class Qlearning():
             action = self.actions[i]
         return action
         
+    def explore(self, current_state):
+        """Takes a current state and randomly perform actions to simulate 
+        experiences"""
+        # we do this for k iterations
+        k = settings.k
+        q = self.qtable
+        data = self.data
+        for i in range(0, k):
+            # randomize action 
+            action = random.choice(self.actions)
+            # handle open positions
+            """
+            self.actions, reward = self.open_positions.calc_return(self.data["Adj. Close"], 
+                                                                   self.timestep, 
+                                                                   action, 
+                                                                   self.actions)"""
+            
+            reward = self.open_positions.calc_daily_return(self.data["Adj. Close"], self.timestep - 1, action)
+            # exploration bonus for a state, action pair
+            ex_bonus = self.dyna_q.calc_exploration_bonus(self.timestep, current_state, action)
+            # update Q table
+            self.updateQ(last_state = self.last_state,
+                         last_action = action,
+                         last_reward = reward,
+                         current_state = current_state,
+                         exploration_bonus = ex_bonus)
+           
 class Helpers():
     
     def partition(self, df):
@@ -189,6 +239,7 @@ class Helpers():
         out = open("RL/memory/qtable_cum_returns.pkl", "wb")
         pickle.dump(qtable, out)
         out.close()
+        
 
         
     
