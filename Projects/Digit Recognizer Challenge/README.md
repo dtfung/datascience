@@ -9,6 +9,10 @@ This is an attempt on the [Digit Recognizer Challenge](https://www.kaggle.com/c/
 * numpy
 * scipy
 
+### Installation
+
+* Install the requirements using `pip install -r requirements.txt`
+
 ### References
 
 1. [Michael A. Nielsen, "Neural Networks and Deep Learning", Determination Press, 2015](http://neuralnetworksanddeeplearning.com/index.html)
