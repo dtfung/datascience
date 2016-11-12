@@ -1,6 +1,6 @@
 ##Train a Convolutional Neural Network
 
-Trained a deep convolutional neural network to classify objects in images from the CIFAR-10 dataset.  
+Trained a convolutional neural network to classify objects in images from the CIFAR-10 dataset.  
 
 ###Dataset:
 
