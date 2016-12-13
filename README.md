@@ -16,8 +16,8 @@ Here you will find a list of data science projects that I have worked on.  I gro
 * Predict Stock Price Direction
 
 ## Coursework
-* Image Recogition on the CIFAR-10 Data Set (Deep Learning
-* Training a Smart Cab to Drive (Reinforcement Learning
+* Image Recogition on the CIFAR-10 Data Set (Deep Learning)
+* Training a Smart Cab to Drive (Reinforcement Learning)
 * A Student Intervention System (Supervised Learning)
 * Predict Housing Prices in the Greater Boston Area (Supervised Learning)
 * Creating Customer Segments (Unsupervised Learning)
