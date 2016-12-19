@@ -14,6 +14,7 @@ Downloading the latest version of Anaconda should come installed with either Pyt
 
 * Python 2.7 or 3.0
 * NumPy
+* Scikit-learn
 * Pandas
 * Matplotlib
 * Keras
