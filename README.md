@@ -3,6 +3,7 @@
 Here you will find a list of data science projects that I have worked on.  I grouped them into 4 categories: Competitions,  Freelance, Exploratory and Coursework.  Competitions are usually hosted by Kaggle, Hackerank or Analytics Vidya.  I recently started freelancing and will be looking to take on more projects over the coming months.  Exploratory projects dive into topics I'm intern.  And the coursework section covers the projects I completed while doing Udacity's Machine Learning Nanodegree.  
 
 ## Competitions:
+* Pump it Up: Data Mining the Water Table (ongoing)
 * Allstate Claims Severity
 * Digit Recognizer 
 * Predicting Red Hat Business Value
