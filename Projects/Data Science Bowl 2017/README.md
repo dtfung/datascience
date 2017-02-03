@@ -4,6 +4,7 @@
 Use Machine Learning to improve lung cancer detection.  
 
 [Competition Home](https://www.kaggle.com/c/data-science-bowl-2017)
+
 [Data](https://www.kaggle.com/c/data-science-bowl-2017/data)
 
 Project Organization
