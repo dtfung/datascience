@@ -4,9 +4,6 @@
 import os
 import sys
 
-import os
-import sys
-
 RANDOM_STATE = 7
 
 """ Set batch size.  The lower it is, the noisier the training 
@@ -37,19 +34,21 @@ def set_sys_path():
     '''Change system path to parent folder'''
     for i in range(0, 2):
         os.chdir('..')
-    src = os.getcwd()
-    sys.path.append(src)
-
+    cwd = os.getcwd()
+    sys.path.append(cwd)
+    
 def preprocess_data():
-
+    
     # list of folders in directory
     patients = os.listdir(STAGE1_INPUTS)
     patients.sort
 
 def predict_cancer():
-    
-    # Split data into train and test sets
-    train, test = preprocess_data()
+    """This function contains several steps.  The first 
+    prepares all the images before being fed to a neural
+    network."""
+    from src.preprocess import prepare_dataset
+    prepare_dataset.load_scans('test')
 
 if __name__ == "__main__":
 
