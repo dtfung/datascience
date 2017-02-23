@@ -36,24 +36,16 @@ def set_sys_path():
         os.chdir('..')
     cwd = os.getcwd()
     sys.path.append(cwd)
-    
-def preprocess_data():
-    
-    # list of folders in directory
-    patients = os.listdir(STAGE1_INPUTS)
-    patients.sort
 
 def predict_cancer():
     """This function contains several steps.  The first 
     prepares all the images before being fed to a neural
     network."""
     from src.preprocess import prepare_dataset
-    prepare_dataset.load_scans('test')
+    prepare_dataset.load_scans()
 
 if __name__ == "__main__":
-
     # Change sys.path if needed
     if CHANGE_DIR is True:
         set_sys_path()
-
     predict_cancer()
