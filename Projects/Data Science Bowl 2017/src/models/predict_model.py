@@ -27,7 +27,7 @@ PREPARE_OFFLINE = True
 to True if you are having trouble accessing modules from other folders"""
 CHANGE_DIR = True
 
-STAGE1_INPUTS = 'data/raw/image_data/stage1'
+STAGE1_INPUTS = 'data/raw/image_data/stage1/'
 STAGE1_LABELS = 'data/raw/stage1_labels.csv'
 
 def set_sys_path():
@@ -42,7 +42,7 @@ def predict_cancer():
     prepares all the images before being fed to a neural
     network."""
     from src.preprocess import prepare_dataset
-    prepare_dataset.load_scans()
+    prepare_dataset.run()
 
 if __name__ == "__main__":
     # Change sys.path if needed
