@@ -3,6 +3,8 @@
 """
 import os
 import sys
+import numpy as np
+import pandas as pd
 
 RANDOM_STATE = 7
 
@@ -18,32 +20,28 @@ under 'src'.
 """
 CHANGE_DIR = True
 
-""" Prepare the images offline by setting PREPARE_OFFLINE to True.  This is 
-recommended so as to reduce the processing time during the training process.
-"""
-PREPARE_OFFLINE = True
-
-""" Set to True to change current directory.  You will only need to set this
-to True if you are having trouble accessing modules from other folders"""
-CHANGE_DIR = True
-
 STAGE1_INPUTS = 'data/raw/image_data/stage1/'
 STAGE1_LABELS = 'data/raw/stage1_labels.csv'
+STAGE1_INPUTS_PROCESSED = 'data/processed/'
 
 def set_sys_path():
-    '''Change system path to parent folder'''
+    """Change system path to parent folder"""
     for i in range(0, 2):
         os.chdir('..')
     cwd = os.getcwd()
     sys.path.append(cwd)
-
+    
 def predict_cancer():
     """This function contains several steps.  The first 
-    prepares all the images before being fed to a neural
+    loads all processed images before being fed to a neural
     network."""
     from src.preprocess import prepare_dataset
-    prepare_dataset.run()
+    # processed images
+    prepare_dataset.process_scans()
 
+    # load image label data into pandas dataframe
+    train_labels = prepare_dataset.load_labels()
+        
 if __name__ == "__main__":
     # Change sys.path if needed
     if CHANGE_DIR is True:
