@@ -17,8 +17,7 @@ from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 
 STAGE1_INPUTS = 'data/raw/image_data/stage1/'
 STAGE1_LABELS = 'data/raw/stage1_labels.csv'
-
-STAGE1_INPUTS_PROCESSED = # TODO: specify folder to save processed images
+STAGE1_INPUTS_PROCESSED = 'data/processed/'
     
 def load_scans(path):
     """Reads data files and returns a list of Pandas dataframes"""
@@ -122,6 +121,27 @@ def count_scans(filepath, num_patients):
     for d in os.listdir(filepath)[:num_patients]:
         print("Patient '{}' has {} scans".format(d, len(os.listdir(filepath + d))))
 
+def process_scans():
+    """Checks for a folder of processed scans.  If it doesn't
+    exist, process the patient scans"""
+
+    processed_folder = os.listdir(STAGE1_INPUTS_PROCESSED)
+    
+    # check if processed images doesn't exist
+    if len(processed_folder) < 1:
+        """Prepare images online.  This WILL take a long time.  
+        If you decide to leave this process running, go 
+        do other things with your life and check back in a 
+        a few hours."""
+        run()
+    else:
+        print('{} processed images found!'.format(len(processed_folder)))
+
+def load_labels():
+    """Create a pandas dataframe from the labels provided"""
+    labels = pd.read_csv(STAGE1_LABELS)
+    return labels
+
 def run():
     """Iterate over each image, and then apply a series of steps as outlined below:
     1). Load scans and add calculate slice thickness
@@ -134,26 +154,48 @@ def run():
     ndarray
         The scan 
     """
+    print('Begin preprocessing...')
+    
     # list of folders in directory
     patients = os.listdir(STAGE1_INPUTS)
     patients.sort
+    print('Retrieved list of image folders')
+    print('--------------------------------\n')
 
+    total_time = 0.0
     # iterate over and preprocess scans for each patient
-    for patient in patients[:2]:
+    for i, patient in enumerate(patients[:2]):
+        start = time.time()
+        print('{}. Patient {}'.format(i, patient))
         # get folder path
         path = STAGE1_INPUTS + patient
 
         # load scan & calculate thickness
         scan = load_scans(path)
+        print('    Loaded scan and saved slice thickness')
 
         # convert pixel values to Hounsefield Units(HU)
         hu_slices = get_pixels_hu(scan)
+        print('    Converted pixel values to HU')
 
         # resampling
         pix_resampled, spacing = resample(hu_slices, scan, [1,1,1])
+        print('    Resampling complete')
 
         # lung segmentation
         segmented_lungs_fill = segment_lung_mask(pix_resampled, True)
-        
+        print('    Segmented lungs complete')
+
+        # save image to file
+        np.save(file = STAGE1_INPUTS_PROCESSED + patient, 
+                arr = segmented_lungs_fill,
+                allow_pickle = False)
+        print('    Image saved')
+        end = time.time()
+        print('    Finished processing.')  
+        print('    Time elapsed on patient: {} seconds'.format(round(end-start, 2)))
+        total_time += end-start
+        print('    Total time elapsed: {} \n'.format(round(total_time, 2)))
+
 if __name__=="__main__":
     run()   
